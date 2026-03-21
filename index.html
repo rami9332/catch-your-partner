@@ -6370,7 +6370,8 @@
             : t(`app.meeting.flow.${meetingFlowState}.cta`);
       }
 
-      ctaEl.disabled = meetingState.loading || meetingFlowState === "loading" || (waitingAcceptanceState && youAccepted) || (arrivalState && ((youArrived && !bothArrived) || (bothArrived && youOk)));
+      const hasStaleLocationLoading = locationReadyState && meetingState.loading;
+      ctaEl.disabled = (meetingState.loading && !hasStaleLocationLoading) || meetingFlowState === "loading" || (waitingAcceptanceState && youAccepted) || (arrivalState && ((youArrived && !bothArrived) || (bothArrived && youOk)));
       ctaEl.style.opacity = ctaEl.disabled ? "0.6" : "1";
 
       const activeIndex = meetingFlowState === "idle" || meetingFlowState === "loading" || meetingFlowState === "error"
@@ -6633,7 +6634,8 @@
     });
 
     document.getElementById("meetingFlowCta")?.addEventListener("click", () => {
-      if (meetingState.loading) return;
+      const locationReadyState = meetingFlowState === "idle" && meetingState.permission === "granted" && !meetingState.activeCandidate && !meetingState.meetingPoint;
+      if (meetingState.loading && !locationReadyState) return;
 
       const currentUserId = authState.user?.id || "";
       const acceptedBy = new Set(meetingState.serverMeeting?.accepted_by || []);
