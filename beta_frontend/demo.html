@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Catch Your Partner – Beta Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #0b0f1a; color: #e9edf5; }
+    main { max-width: 1024px; margin: 0 auto; padding: 24px 16px 64px; }
+    h1 { margin: 0 0 6px; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+    label { display: block; font-size: 13px; color: #9da6bd; margin-bottom: 4px; }
+    input, select, button, textarea { font: inherit; }
+    input, select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.02); color: #e9edf5; margin-bottom: 10px; }
+    button { cursor: pointer; border: none; border-radius: 10px; padding: 10px 14px; background: linear-gradient(135deg, #ff7a2f, #20c997); color: #0b0f1a; font-weight: 700; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+    .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.08); color: #9da6bd; font-size: 12px; }
+    pre { background: rgba(0,0,0,0.35); padding: 10px; border-radius: 10px; overflow-x: auto; }
+    .flex { display: flex; gap: 8px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Catch Your Partner – Beta API Demo</h1>
+    <div class="pill">Läuft gegen http://127.0.0.1:8000 (uvicorn)</div>
+
+    <div class="card">
+      <h3>1) Signup</h3>
+      <div class="row">
+        <div>
+          <label>User ID</label><input id="uid" value="demo" />
+        </div>
+        <div>
+          <label>Name</label><input id="name" value="Demo User" />
+        </div>
+        <div>
+          <label>E-Mail</label><input id="email" value="demo@example.com" />
+        </div>
+        <div>
+          <label>Astro</label><input id="astro" value="Leo" />
+        </div>
+        <div>
+          <label>Interessen (Komma)</label><input id="interests" value="music,coffee,art" />
+        </div>
+        <div>
+          <label>Modus</label>
+          <select id="mode">
+            <option value="free">free</option>
+            <option value="premium">premium</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="signup()">Signup</button>
+    </div>
+
+    <div class="card">
+      <h3>2) Ready / Ghost</h3>
+      <div class="row">
+        <div>
+          <label>Zone-Tag (z.B. alexanderplatz)</label><input id="zonetag" placeholder="optional" />
+        </div>
+      </div>
+      <div class="flex">
+        <button onclick="ready(true)">Ready on</button>
+        <button onclick="ready(false)">Ready off</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>3) Radar</h3>
+      <button onclick="radar()">Radar pull</button>
+      <pre id="radarOut"></pre>
+    </div>
+
+    <div class="card">
+      <h3>4) Accept/Decline</h3>
+      <div class="row">
+        <div>
+          <label>Ziel Ephemeral ID</label><input id="target" placeholder="aus Radar kopieren" />
+        </div>
+      </div>
+      <div class="flex">
+        <button onclick="decision('accept')">Accept</button>
+        <button onclick="decision('decline')">Decline</button>
+      </div>
+      <pre id="decisionOut"></pre>
+    </div>
+
+    <div class="card">
+      <h3>5) Quest / Venue / Coach</h3>
+      <div class="flex">
+        <button onclick="quest()">Quest holen</button>
+        <button onclick="venue()">Venues holen</button>
+        <button onclick="coach()">Coach Tipps</button>
+      </div>
+      <pre id="metaOut"></pre>
+    </div>
+
+    <div class="card">
+      <h3>6) Chemistry & Chat</h3>
+      <div class="row">
+        <div><label>Session ID</label><input id="sess" placeholder="aus Decision Response" /></div>
+        <div><label>Comfort (1-5)</label><input id="comfort" value="4" /></div>
+        <div><label>Humor (1-5)</label><input id="humor" value="4" /></div>
+        <div><label>Interest (1-5)</label><input id="interest" value="4" /></div>
+      </div>
+      <div class="flex">
+        <button onclick="chemistry()">Chemistry senden</button>
+        <button onclick="chat()">Chat öffnen</button>
+      </div>
+      <div class="row">
+        <div>
+          <label>Chat Nachricht</label>
+          <input id="chatmsg" placeholder="Hi, lass uns treffen..." />
+        </div>
+      </div>
+      <div class="flex">
+        <button onclick="sendChat()">Senden</button>
+        <button onclick="historyChat()">History</button>
+      </div>
+      <pre id="chemOut"></pre>
+    </div>
+
+    <div class="card">
+      <h3>Safety / Sponsor</h3>
+      <div class="flex">
+        <button onclick="panic()">Panic (Ghost)</button>
+        <button onclick="sponsor()">Sponsor Venue registrieren</button>
+      </div>
+      <pre id="safeOut"></pre>
+    </div>
+
+  </main>
+
+  <script>
+    const BASE = "http://127.0.0.1:8000";
+    let lastSession = "";
+
+    async function signup() {
+      const payload = {
+        user_id: gid("uid").value,
+        name: gid("name").value,
+        email: gid("email").value,
+        astro_sign: gid("astro").value || null,
+        interests: gid("interests").value.split(",").map(s => s.trim()).filter(Boolean),
+        mode: gid("mode").value
+      };
+      await post("/auth/signup", payload);
+      alert("Signup ok");
+    }
+
+    async function ready(on) {
+      const payload = {
+        user_id: gid("uid").value,
+        on,
+        safe_zones: [],
+        zone_tag: gid("zonetag").value || null
+      };
+      const r = await post("/ready", payload);
+      console.log(r);
+    }
+
+    async function radar() {
+      const r = await get("/radar", { user_id: gid("uid").value });
+      gid("radarOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function decision(decision) {
+      const payload = {
+        user_id: gid("uid").value,
+        target_session_id: gid("target").value,
+        decision
+      };
+      const r = await post("/match/decision", payload);
+      gid("decisionOut").textContent = JSON.stringify(r, null, 2);
+      if (r.session_id) {
+        lastSession = r.session_id;
+        gid("sess").value = r.session_id;
+      }
+    }
+
+    async function quest() {
+      const r = await get("/match/quest", { session_id: session() });
+      gid("metaOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function venue() {
+      const r = await get("/venue", { session_id: session() });
+      gid("metaOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function coach() {
+      const r = await get("/coach", { session_id: session() });
+      gid("metaOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function chemistry() {
+      const payload = {
+        session_id: session(),
+        user_id: gid("uid").value,
+        comfort: Number(gid("comfort").value),
+        humor: Number(gid("humor").value),
+        interest: Number(gid("interest").value)
+      };
+      const r = await post("/chemistry", payload);
+      gid("chemOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function chat() {
+      const r = await post("/chat/initiate", { session_id: session() });
+      gid("chemOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function sendChat() {
+      const r = await post("/chat/send", { session_id: session(), user_id: gid("uid").value, text: gid("chatmsg").value });
+      gid("chemOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function historyChat() {
+      const r = await get("/chat/history", { session_id: session() });
+      gid("chemOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function panic() {
+      const r = await post("/safety/panic", { user_id: gid("uid").value, reason: "demo" });
+      gid("safeOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    async function sponsor() {
+      const r = await post("/sponsor/register", { name: "Demo Bar", type: "bar", offer: "2 Drinks 1 Price", eta_min: 5, sponsored: true });
+      gid("safeOut").textContent = JSON.stringify(r, null, 2);
+    }
+
+    function session() {
+      return gid("sess").value || lastSession || alert("Session ID fehlt");
+    }
+
+    function gid(id) { return document.getElementById(id); }
+
+    async function post(path, json) {
+      const r = await fetch(BASE + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(json) });
+      if (!r.ok) throw new Error(await r.text());
+      return r.json();
+    }
+    async function get(path, params) {
+      const qs = params ? "?" + new URLSearchParams(params) : "";
+      const r = await fetch(BASE + path + qs);
+      if (!r.ok) throw new Error(await r.text());
+      return r.json();
+    }
+  </script>
+</body>
+</html>

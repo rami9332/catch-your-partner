@@ -1,0 +1,17 @@
+.DS_Store
+._*
+.env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.sqlite
+*.sqlite3
+dist/
+logs/
+match_log.txt
+beta_backend/storage/
+uploads/
+processed/
+rejected/
+known_faces/
