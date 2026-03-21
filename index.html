@@ -5627,11 +5627,22 @@
           way["amenity"~"cafe|restaurant|library|community_centre|ice_cream"](around:1400,${lat},${lng});
         );
         out center 20;`;
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
+      const timeout = window.setTimeout(() => controller?.abort(), 12000);
 
-      const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-      if (!response.ok) throw new Error("app.meeting.errors.point_unavailable");
+      let data;
+      try {
+        const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`, {
+          signal: controller?.signal
+        });
+        if (!response.ok) throw new Error("app.meeting.errors.point_unavailable");
+        data = await response.json();
+      } catch (error) {
+        throw new Error("app.meeting.errors.point_unavailable");
+      } finally {
+        window.clearTimeout(timeout);
+      }
 
-      const data = await response.json();
       const candidates = Array.isArray(data?.elements) ? data.elements : [];
       if (!candidates.length) throw new Error("app.meeting.errors.point_unavailable");
 
@@ -5709,7 +5720,7 @@
       meetingState.route = null;
       meetingState.routeError = false;
       meetingState.routingStatus = "idle";
-      meetingState.permission = "requesting";
+      meetingState.permission = hasUsableLocation ? "granted" : "requesting";
       meetingFlowState = "loading";
       updateMeetingUI();
 
@@ -5762,7 +5773,10 @@
         updateMeetingUI();
         scheduleMatchingSync("location");
       } catch (error) {
-        setMeetingError(resolveGeolocationError(error));
+        const errorKey = error?.message?.startsWith("app.meeting.errors.")
+          ? error.message
+          : resolveGeolocationError(error);
+        setMeetingError(errorKey);
       }
     }
 
