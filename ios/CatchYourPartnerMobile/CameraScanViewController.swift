@@ -1,17 +1,24 @@
 import AVFoundation
-import ImageIO
 import UIKit
 import Vision
 
-final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
+final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureMetadataOutputObjectsDelegate {
     private enum ScanPhase {
         case scanning
         case result
     }
 
+    private enum LivenessStep {
+        case straight
+        case left
+        case right
+        case complete
+    }
+
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "com.catchyourpartner.camera-scan.session")
     private let videoOutput = AVCaptureVideoDataOutput()
+    private let metadataOutput = AVCaptureMetadataOutput()
     private let previewView = UIView()
     private let overlayCard = UIView()
     private let titleLabel = UILabel()
@@ -26,6 +33,9 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
     private var captureScheduled = false
     private var didFinish = false
     private var phase: ScanPhase = .scanning
+    private var currentLivenessStep: LivenessStep = .straight
+    private var stableFrames = 0
+    private let stableFrameThreshold = 4
 
     private let completion: (CameraScanCoordinator.ScanResult) -> Void
 
@@ -62,14 +72,12 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
         view.addSubview(overlayCard)
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Gesicht wird erfasst"
         titleLabel.textColor = UIColor(red: 0.98, green: 0.94, blue: 0.89, alpha: 1.0)
         titleLabel.font = .systemFont(ofSize: 28, weight: .bold)
         titleLabel.numberOfLines = 0
         overlayCard.addSubview(titleLabel)
 
         bodyLabel.translatesAutoresizingMaskIntoConstraints = false
-        bodyLabel.text = "Die Frontkamera laeuft nativ. Danach prueft Vision den erfassten Frame auf echte Gesichter."
         bodyLabel.textColor = UIColor(red: 0.82, green: 0.74, blue: 0.66, alpha: 1.0)
         bodyLabel.font = .systemFont(ofSize: 16, weight: .medium)
         bodyLabel.numberOfLines = 0
@@ -77,7 +85,6 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
 
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.color = UIColor(red: 1.0, green: 0.74, blue: 0.25, alpha: 1.0)
-        activityIndicator.startAnimating()
         overlayCard.addSubview(activityIndicator)
 
         primaryButton.translatesAutoresizingMaskIntoConstraints = false
@@ -137,7 +144,8 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
             secondaryButton.bottomAnchor.constraint(equalTo: overlayCard.bottomAnchor, constant: -20)
         ])
 
-        applyScanningState()
+        resetLiveness()
+        applyCurrentLivenessPrompt()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -233,14 +241,23 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
         videoOutput.alwaysDiscardsLateVideoFrames = true
         videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
         videoOutput.setSampleBufferDelegate(self, queue: sessionQueue)
-
         guard session.canAddOutput(videoOutput) else {
             throw CameraScanRuntimeError.unavailable
         }
         session.addOutput(videoOutput)
 
-        if let connection = videoOutput.connection(with: .video), connection.isVideoOrientationSupported {
-            connection.videoOrientation = .portrait
+        guard session.canAddOutput(metadataOutput) else {
+            throw CameraScanRuntimeError.unavailable
+        }
+        session.addOutput(metadataOutput)
+        metadataOutput.setMetadataObjectsDelegate(self, queue: sessionQueue)
+        metadataOutput.metadataObjectTypes = metadataOutput.availableMetadataObjectTypes.contains(.face) ? [.face] : []
+
+        if let videoConnection = videoOutput.connection(with: .video), videoConnection.isVideoOrientationSupported {
+            videoConnection.videoOrientation = .portrait
+        }
+        if let metadataConnection = metadataOutput.connection(with: .video), metadataConnection.isVideoOrientationSupported {
+            metadataConnection.videoOrientation = .portrait
         }
 
         DispatchQueue.main.async {
@@ -259,11 +276,106 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
     ) {
         guard !didFinish else { return }
         latestSampleBuffer = sampleBuffer
+    }
 
+    func metadataOutput(
+        _ output: AVCaptureMetadataOutput,
+        didOutput metadataObjects: [AVMetadataObject],
+        from connection: AVCaptureConnection
+    ) {
+        guard !didFinish, phase == .scanning, !captureScheduled else { return }
+
+        let faces = metadataObjects.compactMap { $0 as? AVMetadataFaceObject }
+        if faces.count > 1 {
+            stableFrames = 0
+            DispatchQueue.main.async {
+                self.applyLiveFeedback(title: "Mehrere Gesichter", body: "Bitte bleib allein im Bild. Der Liveness-Scan prueft nur genau eine Person.")
+            }
+            return
+        }
+
+        guard let face = faces.first else {
+            stableFrames = 0
+            DispatchQueue.main.async {
+                self.applyLiveFeedback(title: "Gesicht ausrichten", body: "Halte dein Gesicht klar vor die Frontkamera. Erst dann startet der Liveness-Scan.")
+            }
+            return
+        }
+
+        let yawAngle = face.hasYawAngle ? face.yawAngle : 0
+        evaluateLiveness(using: yawAngle)
+    }
+
+    private func evaluateLiveness(using yawAngle: CGFloat) {
+        let straightSatisfied = abs(yawAngle) <= 12
+        let leftSatisfied = yawAngle <= -18
+        let rightSatisfied = yawAngle >= 18
+
+        switch currentLivenessStep {
+        case .straight:
+            DispatchQueue.main.async {
+                self.applyLiveFeedback(
+                    title: "Geradeaus schauen",
+                    body: straightSatisfied
+                        ? "Geradeaus erkannt. Gleich folgt die seitliche Bewegung fuer den echten Liveness-Scan."
+                        : "Blick kurz geradeaus in die Kamera halten. Erst danach geht der Scan weiter."
+                )
+            }
+            registerStepProgress(satisfied: straightSatisfied) { [weak self] in
+                self?.currentLivenessStep = .left
+                self?.applyCurrentLivenessPrompt()
+            }
+        case .left:
+            DispatchQueue.main.async {
+                self.applyLiveFeedback(
+                    title: "Nach links schauen",
+                    body: leftSatisfied
+                        ? "Linke Bewegung erkannt. Als Naechstes bitte nach rechts schauen."
+                        : "Dreh deinen Kopf leicht nach links. Diese Bewegung wird echt im Live-Stream geprueft."
+                )
+            }
+            registerStepProgress(satisfied: leftSatisfied) { [weak self] in
+                self?.currentLivenessStep = .right
+                self?.applyCurrentLivenessPrompt()
+            }
+        case .right:
+            DispatchQueue.main.async {
+                self.applyLiveFeedback(
+                    title: "Nach rechts schauen",
+                    body: rightSatisfied
+                        ? "Rechte Bewegung erkannt. Der Verifizierungs-Scan wird jetzt mit einem echten Frame abgeschlossen."
+                        : "Dreh deinen Kopf jetzt leicht nach rechts. Danach wird der finale Verifizierungsframe geprueft."
+                )
+            }
+            registerStepProgress(satisfied: rightSatisfied) { [weak self] in
+                self?.currentLivenessStep = .complete
+                self?.beginFinalVerification()
+            }
+        case .complete:
+            break
+        }
+    }
+
+    private func registerStepProgress(satisfied: Bool, completion: @escaping () -> Void) {
+        stableFrames = satisfied ? (stableFrames + 1) : 0
+        guard stableFrames >= stableFrameThreshold else { return }
+        stableFrames = 0
+        completion()
+    }
+
+    private func beginFinalVerification() {
         guard !captureScheduled else { return }
         captureScheduled = true
+        DispatchQueue.main.async {
+            self.titleLabel.text = "Scan läuft"
+            self.bodyLabel.text = "Geradeaus, links und rechts wurden erkannt. Vision prueft jetzt den finalen Verifizierungsframe."
+            self.activityIndicator.isHidden = false
+            self.activityIndicator.startAnimating()
+            self.primaryButton.isHidden = true
+            self.secondaryButton.isHidden = true
+        }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self] in
             self?.captureCurrentFrame()
         }
     }
@@ -293,7 +405,7 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
                     options: [:]
                 )
                 try handler.perform([request])
-                let faces = (request.results as? [VNFaceObservation]) ?? []
+                let faces = request.results ?? []
                 let result = self.buildResult(from: faces)
                 self.handleScanResult(result)
             } catch {
@@ -355,9 +467,9 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
         return CameraScanCoordinator.ScanResult(
             scanAvailable: true,
             faceCount: 1,
-            verificationReady: true,
-            qualityStatus: "ok",
-            errorStatus: nil
+            verificationReady: currentLivenessStep == .complete,
+            qualityStatus: currentLivenessStep == .complete ? "liveness_complete" : nil,
+            errorStatus: currentLivenessStep == .complete ? nil : "capture_failed"
         )
     }
 
@@ -406,12 +518,33 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
         phase = .scanning
         captureScheduled = false
         latestSampleBuffer = nil
-        applyScanningState()
+        resetLiveness()
+        applyCurrentLivenessPrompt()
     }
 
-    private func applyScanningState() {
-        titleLabel.text = "Gesicht wird erfasst"
-        bodyLabel.text = "Halte dein Gesicht ruhig in die Frontkamera. Vision prueft danach den naechsten echten Frame."
+    private func resetLiveness() {
+        currentLivenessStep = .straight
+        stableFrames = 0
+        phase = .scanning
+    }
+
+    private func applyCurrentLivenessPrompt() {
+        switch currentLivenessStep {
+        case .straight:
+            applyLiveFeedback(title: "Geradeaus schauen", body: "Halte dein Gesicht ruhig und schau kurz geradeaus in die Kamera. Danach fuehrt der echte Liveness-Scan weiter.")
+        case .left:
+            applyLiveFeedback(title: "Nach links schauen", body: "Der Geradeaus-Blick wurde erkannt. Dreh deinen Kopf jetzt leicht nach links.")
+        case .right:
+            applyLiveFeedback(title: "Nach rechts schauen", body: "Die linke Bewegung wurde erkannt. Dreh deinen Kopf jetzt leicht nach rechts.")
+        case .complete:
+            titleLabel.text = "Scan läuft"
+            bodyLabel.text = "Die Liveness-Schritte sind durchlaufen. Der Verifizierungsframe wird jetzt ausgewertet."
+        }
+    }
+
+    private func applyLiveFeedback(title: String, body: String) {
+        titleLabel.text = title
+        bodyLabel.text = body
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
         primaryButton.isHidden = true
@@ -420,8 +553,8 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
 
     private func applySuccessState() {
         phase = .result
-        titleLabel.text = "Gesicht erkannt"
-        bodyLabel.text = "Ein einzelnes Gesicht wurde sauber erkannt. Die Verifizierung wird jetzt vorbereitet."
+        titleLabel.text = "Verifizierung erfolgreich"
+        bodyLabel.text = "Geradeaus, links und rechts wurden erkannt. Genau ein Gesicht blieb danach im Verifizierungsframe sichtbar."
         activityIndicator.stopAnimating()
         activityIndicator.isHidden = true
         primaryButton.isHidden = true
@@ -432,8 +565,8 @@ final class CameraScanViewController: UIViewController, AVCaptureVideoDataOutput
         phase = .result
         titleLabel.text = result.errorStatus == "multiple_faces" ? "Mehrere Gesichter erkannt" : "Kein Gesicht erkannt"
         bodyLabel.text = result.errorStatus == "multiple_faces"
-            ? "Bitte richte die Kamera so aus, dass nur eine Person im Bild ist."
-            : "Bitte halte dein Gesicht klar in die Kamera und versuche es noch einmal."
+            ? "Im finalen Verifizierungsframe waren mehrere Gesichter sichtbar. Bitte starte den Liveness-Scan erneut alleine."
+            : "Im finalen Verifizierungsframe war kein Gesicht klar genug sichtbar. Bitte fuehre den Liveness-Scan erneut durch."
         activityIndicator.stopAnimating()
         activityIndicator.isHidden = true
         primaryButton.setTitle("Erneut scannen", for: .normal)

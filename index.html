@@ -2244,11 +2244,11 @@
         "app.profile.scan.title.requesting": "Kamera wird vorbereitet",
         "app.profile.scan.body.requesting": "Kamerazugriff wird angefragt. Danach beginnt der eigentliche Scan.",
         "app.profile.scan.title.active": "Gesicht ausrichten",
-        "app.profile.scan.body.active": "Halte nur dein Gesicht ruhig vor die Frontkamera. Danach startet die Pruefung.",
+        "app.profile.scan.body.active": "Der native Scan fuehrt jetzt echte Liveness-Schritte. Erst geradeaus, dann links und rechts, danach folgt der Verifizierungsframe.",
         "app.profile.scan.title.processing": "Scan läuft",
-        "app.profile.scan.body.processing": "Der aktuelle Kameraframe wird jetzt auf genau ein Gesicht geprueft.",
-        "app.profile.scan.title.success": "Gesicht erkannt",
-        "app.profile.scan.body.success": "Genau ein Gesicht wurde erkannt. Die Verifizierung ist damit bereit.",
+        "app.profile.scan.body.processing": "Der Liveness-Scan prueft gerade echte Kopfbewegung und danach den finalen Verifizierungsframe.",
+        "app.profile.scan.title.success": "Verifizierung erfolgreich",
+        "app.profile.scan.body.success": "Die Liveness-Pruefung wurde erfolgreich durchlaufen. Erst danach wurde die Verifizierung freigegeben.",
         "app.profile.scan.title.no_face": "Kein Gesicht erkannt",
         "app.profile.scan.body.no_face": "Es wurde kein Gesicht erkannt. Richte dein Gesicht neu aus und pruefe noch einmal.",
         "app.profile.scan.title.multiple_faces": "Mehrere Gesichter erkannt",
@@ -2261,8 +2261,8 @@
         "app.profile.detection.unsupported": "Die Kamera laeuft, aber echte Gesichtserkennung ist hier technisch nicht verfuegbar.",
         "app.profile.storage.live": "In dieser Web-App werden keine Rohbilder dauerhaft gespeichert. Der erfasste Frame bleibt nur fuer den aktuellen Scan im Browser.",
         "app.profile.storage.capture_only": "Es wird nur der aktuelle Kameraframe fuer den lokalen Scan verwendet. Dauerhafte Speicherung ist hier nicht eingebaut.",
-        "app.profile.verification.ready": "Verifizierung ist nur dann bereit, wenn im erfassten Bild genau ein Gesicht erkannt wurde.",
-        "app.profile.verification.pending": "Ohne erkannten Scan bleibt die Verifizierung bewusst inaktiv.",
+        "app.profile.verification.ready": "Verifizierung ist erst dann bereit, wenn der Liveness-Scan erfolgreich abgeschlossen und danach genau ein Gesicht bestaetigt wurde.",
+        "app.profile.verification.pending": "Ohne erfolgreichen Liveness-Scan bleibt die Verifizierung bewusst inaktiv.",
         "app.profile.processing.title": "Matching-Basis",
         "app.profile.processing.body": "Hier siehst du nur, ob Scan, Radar und Standort fuer echtes Matching bereit sind.",
         "app.profile.metrics.mode.label": "Erkennungsmodus",
@@ -2333,8 +2333,8 @@
         "app.profile.trust.level.basic.pending": "E-Mail- oder Telefonnummern-Bestaetigung ist noch nicht sichtbar hinterlegt.",
         "app.profile.trust.level.verified.ready": "Der Face-Scan war erfolgreich. Gesicht und Verifizierung bleiben als eigenes Signal getrennt sichtbar.",
         "app.profile.trust.level.verified.pending": "Ohne erfolgreichen Face-Scan bleibt dieses Profil noch nicht verifiziert.",
-        "app.profile.trust.level.extended.ready": "Ein zusaetzliches Signal ist verbunden. Das ergaenzt Vertrauen, ersetzt aber keine Verifizierung.",
-        "app.profile.trust.level.extended.pending": "Zusatzsignale wie Social-Profil oder spaetere ID-Pruefung sind noch nicht verbunden.",
+        "app.profile.trust.level.extended.ready": "Ein zusaetzliches Signal ist verbunden. Dazu kann spaeter auch eine Ausweispruefung als hoechste Vertrauensstufe gehoeren, ohne Face-Scan oder Telefonnummer zu ersetzen.",
+        "app.profile.trust.level.extended.pending": "Zusatzsignale wie Social-Profil oder spaetere Ausweispruefung als eigene hoechste Stufe sind noch nicht verbunden.",
         "app.profile.trust.signal.photo.label": "Profilbild",
         "app.profile.trust.signal.photo.ready": "Ein eigenes Profilbild ist hinterlegt.",
         "app.profile.trust.signal.photo.pending_review": "Ein Profilbild wurde hochgeladen und ist noch nicht freigegeben.",
@@ -2744,11 +2744,11 @@
         "app.profile.scan.title.requesting": "Preparing camera",
         "app.profile.scan.body.requesting": "The browser is asking for camera access. Then the live scan can start.",
         "app.profile.scan.title.active": "Camera active",
-        "app.profile.scan.body.active": "The live preview is running. The scan captures a real frame and checks it locally for a face.",
+        "app.profile.scan.body.active": "The native scan now runs real liveness steps. First straight ahead, then left and right, and only then the verification frame is checked.",
         "app.profile.scan.title.processing": "Processing scan",
-        "app.profile.scan.body.processing": "The captured frame is being checked locally in the browser.",
-        "app.profile.scan.title.success": "Verification ready",
-        "app.profile.scan.body.success": "A face was detected in the captured frame. Verification can now be prepared.",
+        "app.profile.scan.body.processing": "The liveness flow is checking real head movement and then the final verification frame.",
+        "app.profile.scan.title.success": "Verification successful",
+        "app.profile.scan.body.success": "The liveness check was completed successfully before verification was unlocked.",
         "app.profile.scan.title.no_face": "No face detected",
         "app.profile.scan.body.no_face": "No face could be reliably detected in the captured frame. Reposition the camera and try again.",
         "app.profile.scan.title.unsupported": "Face detection unavailable",
@@ -2759,8 +2759,8 @@
         "app.profile.detection.unsupported": "The camera works, but real face detection is not available here.",
         "app.profile.storage.live": "No raw images are stored permanently in this web app. The captured frame stays only for the current scan in the browser.",
         "app.profile.storage.capture_only": "Only the current camera frame is used for the local scan. Permanent storage is not implemented here.",
-        "app.profile.verification.ready": "Verification is ready only if exactly one face is detected in the captured image.",
-        "app.profile.verification.pending": "Without a detected face, verification stays inactive.",
+        "app.profile.verification.ready": "Verification is ready only after the liveness flow succeeds and exactly one face is confirmed afterwards.",
+        "app.profile.verification.pending": "Without a successful liveness flow, verification stays inactive.",
         "app.profile.processing.title": "What is technically happening",
         "app.profile.processing.body": "Detection runs locally in the browser. Embeddings are not generated in this build and are not claimed.",
         "app.profile.metrics.mode.label": "Detection mode",
@@ -2831,8 +2831,8 @@
         "app.profile.trust.level.basic.pending": "Confirmed email or phone is not visibly available yet.",
         "app.profile.trust.level.verified.ready": "The face scan succeeded. Face verification stays visible as a separate signal from the profile photo.",
         "app.profile.trust.level.verified.pending": "Without a successful face scan, this profile is not verified yet.",
-        "app.profile.trust.level.extended.ready": "An extra signal is connected. It adds trust, but does not replace verification.",
-        "app.profile.trust.level.extended.pending": "Extra signals like a social profile or later ID check are not connected yet.",
+        "app.profile.trust.level.extended.ready": "An extra signal is connected. A later ID check can sit here as the highest trust layer without replacing face scan or phone verification.",
+        "app.profile.trust.level.extended.pending": "Extra signals like a social profile or a later ID check as its own higher trust layer are not connected yet.",
         "app.profile.trust.signal.photo.label": "Profile photo",
         "app.profile.trust.signal.photo.ready": "A dedicated profile photo is available.",
         "app.profile.trust.signal.photo.pending_review": "A profile photo was uploaded and is not approved yet.",
@@ -4278,6 +4278,13 @@
         phoneVerificationStatus === "verified"
         && user.phone_verified_at
       );
+      const idVerificationStatus = typeof user.id_verification_status === "string"
+        ? user.id_verification_status
+        : "";
+      const idVerified = Boolean(
+        idVerificationStatus === "verified"
+        && user.id_verified_at
+      );
       const socialConnected = Boolean(user.instagram_connected || user.instagramConnected || user.facebook_connected || user.facebookConnected || user.social_connected || user.socialConnected);
       const profilePhotoStatus = typeof user.profile_photo_status === "string"
         ? user.profile_photo_status
@@ -4289,7 +4296,7 @@
       );
       const faceVerified = profileState.resultState === "ready";
       const basicReady = Boolean(emailConfirmed || phoneConfirmed);
-      const extendedReady = Boolean(socialConnected);
+      const extendedReady = Boolean(socialConnected || idVerified);
 
       trustBasicChip.textContent = t(`app.profile.trust.state.${basicReady ? "ready" : "pending"}`);
       trustBasicBody.textContent = t(`app.profile.trust.level.basic.${basicReady ? "ready" : "pending"}`);
@@ -5440,6 +5447,20 @@
         return;
       }
 
+      if (nativePoint && (!result?.errorStatus || result?.errorStatus === "routing_unavailable" || result?.errorStatus === "directions_failed")) {
+        meetingState.nativeRouteActive = false;
+        meetingState.route = null;
+        meetingState.routeError = Boolean(result?.errorStatus);
+        meetingState.routingStatus = result?.errorStatus ? "unavailable" : "ready";
+        meetingState.errorKey = result?.errorStatus === "routing_unavailable" || result?.errorStatus === "directions_failed"
+          ? "app.meeting.errors.route_unavailable"
+          : "";
+        meetingFlowState = "meeting_point_ready";
+        updateMeetingMap();
+        if (shouldOpenChat) queueMicrotask(() => { openMeetingChat(); });
+        return;
+      }
+
       if (nativeLocation && !nativePoint && !result?.errorStatus) {
         meetingState.nativeRouteActive = false;
         meetingState.route = null;
@@ -5726,6 +5747,17 @@
 
       try {
         if (hasUsableLocation) {
+          if (window.CYPNative?.openMeetingMap) {
+            const nativeResult = await openNativeMeetingMap();
+            applyNativeMeetingMapResult(nativeResult);
+            if (meetingState.meetingPoint || nativeResult?.errorStatus) {
+              meetingState.loading = false;
+              updateMeetingUI();
+              scheduleMatchingSync("location");
+              return;
+            }
+          }
+
           meetingState.meetingPoint = await findNeutralMeetingPoint(meetingState.currentPosition.lat, meetingState.currentPosition.lng);
           meetingState.route = null;
           meetingState.routeError = false;

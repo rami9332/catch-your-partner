@@ -488,29 +488,34 @@ final class MapMeetingViewController: UIViewController, CLLocationManagerDelegat
 
         if activeMeetingPoint != nil {
             updateMapFocus()
-            if let acceptanceState = acceptanceFlowState(), route == nil {
+            if let acceptanceState = acceptanceFlowState(), acceptanceStatus?.fullyAccepted != true {
                 applyFlowState(acceptanceState)
+            } else if let okState = okFlowState() {
+                applyFlowState(okState)
+            } else if let arrivalState = arrivalFlowState() {
+                applyFlowState(arrivalState)
+            } else if route == nil {
+                applyFlowState(.meetingPointReady)
             } else {
-                applyFlowState(route == nil ? .meetingPointReady : (okFlowState() ?? arrivalFlowState() ?? .navigationActive))
+                applyFlowState(.navigationActive)
             }
             calculateRouteIfNeeded()
             return
         }
 
-        guard let candidateLocation else {
-            applyFlowState(.error, bodyOverride: "Dein Standort ist geladen, aber fuer den Treffpunkt fehlen noch Daten der anderen Person.")
-            routeErrorStatus = "meeting_point_missing"
-            return
-        }
-
         guard !isResolvingMeetingPoint else { return }
         isResolvingMeetingPoint = true
-        applyFlowState(.locating, bodyOverride: "Ein neutraler Treffpunkt wird nativ gesucht.")
-
-        let midpoint = CLLocationCoordinate2D(
-            latitude: (latestLocation.coordinate.latitude + candidateLocation.latitude) / 2,
-            longitude: (latestLocation.coordinate.longitude + candidateLocation.longitude) / 2
-        )
+        let midpoint: CLLocationCoordinate2D
+        if let candidateLocation {
+            midpoint = CLLocationCoordinate2D(
+                latitude: (latestLocation.coordinate.latitude + candidateLocation.latitude) / 2,
+                longitude: (latestLocation.coordinate.longitude + candidateLocation.longitude) / 2
+            )
+            applyFlowState(.locating, bodyOverride: "Ein neutraler Treffpunkt zwischen euch wird nativ gesucht.")
+        } else {
+            midpoint = latestLocation.coordinate
+            applyFlowState(.locating, bodyOverride: "Ein neutraler Treffpunkt in deiner Naehe wird nativ vorbereitet.")
+        }
 
         searchMeetingPoint(around: midpoint) { [weak self] meetingPoint in
             guard let self else { return }

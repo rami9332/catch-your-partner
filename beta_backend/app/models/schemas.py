@@ -34,6 +34,9 @@ class UserResponse(BaseModel):
     phone_verification_requested_at: Optional[datetime] = None
     phone_verified_at: Optional[datetime] = None
     phone_verification_locked_until: Optional[datetime] = None
+    id_verification_status: str = "not_started"
+    id_verification_requested_at: Optional[datetime] = None
+    id_verified_at: Optional[datetime] = None
     profile_photo_url: Optional[str] = None
     profile_photo_status: str = "not_started"
     profile_photo_uploaded_at: Optional[datetime] = None
