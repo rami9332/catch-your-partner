@@ -5759,10 +5759,9 @@
           }
 
           meetingState.meetingPoint = await findNeutralMeetingPoint(meetingState.currentPosition.lat, meetingState.currentPosition.lng);
-          meetingState.route = null;
-          meetingState.routeError = false;
-          meetingState.routingStatus = "ready";
-          meetingFlowState = "meeting_point_ready";
+          await calculateMeetingRoute();
+          meetingState.routingStatus = meetingState.route ? "active" : "ready";
+          meetingFlowState = meetingState.route ? "navigating" : "meeting_point_ready";
           await ensureMeetingMap();
           meetingState.loading = false;
           updateMeetingMap();
@@ -5795,10 +5794,9 @@
         meetingState.lastLocationAt = new Date().toISOString();
 
         meetingState.meetingPoint = await findNeutralMeetingPoint(position.coords.latitude, position.coords.longitude);
-        meetingState.route = null;
-        meetingState.routeError = false;
-        meetingState.routingStatus = "ready";
-        meetingFlowState = "meeting_point_ready";
+        await calculateMeetingRoute();
+        meetingState.routingStatus = meetingState.route ? "active" : "ready";
+        meetingFlowState = meetingState.route ? "navigating" : "meeting_point_ready";
         await ensureMeetingMap();
         meetingState.loading = false;
         updateMeetingMap();
