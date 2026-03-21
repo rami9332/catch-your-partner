@@ -2110,8 +2110,8 @@
         "app.meeting.flow.idle.body": "Gib deinen Standort frei, damit wir einen echten Treffpunkt in deiner Nähe finden und auf der Karte anzeigen können.",
         "app.meeting.flow.idle.cta": "Standort freigeben",
         "app.meeting.flow.idle.ready_title": "Standort ist bereit",
-        "app.meeting.flow.idle.ready_body": "Dein Standort ist verfuegbar. Sobald ein passender Kandidat oder Treffpunkt vorliegt, fuehrt der Treffen-Flow direkt weiter.",
-        "app.meeting.flow.idle.ready_cta": "Standort aktualisieren",
+        "app.meeting.flow.idle.ready_body": "Dein Standort ist verfuegbar. Von hier aus kann jetzt direkt ein neutraler Treffpunkt vorbereitet werden.",
+        "app.meeting.flow.idle.ready_cta": "Treffpunkt vorbereiten",
         "app.meeting.flow.idle.candidate_title": "Passender aktiver Nutzer erkannt",
         "app.meeting.flow.idle.candidate_body": "Ein passender aktiver Nutzer ist gerade in deiner Naehe erkannt worden. Sobald du deinen Standort freigibst, kann der Treffen-Ablauf vorbereitet werden.",
         "app.meeting.flow.idle.candidate_body_local_missing": "Ein passender aktiver Nutzer ist erkannt. Fuer einen neutralen Treffpunkt fehlt noch dein aktueller Standort.",
@@ -2612,8 +2612,8 @@
         "app.meeting.flow.idle.body": "Share your location so we can find a real public meet spot nearby and place it on the map.",
         "app.meeting.flow.idle.cta": "Share location",
         "app.meeting.flow.idle.ready_title": "Location is ready",
-        "app.meeting.flow.idle.ready_body": "Your location is available now. As soon as a matching candidate or meet spot exists, the meeting flow can continue directly.",
-        "app.meeting.flow.idle.ready_cta": "Refresh location",
+        "app.meeting.flow.idle.ready_body": "Your location is available now. From here, a neutral meet spot can be prepared directly.",
+        "app.meeting.flow.idle.ready_cta": "Prepare meet spot",
         "app.meeting.flow.idle.candidate_title": "Nearby candidate detected",
         "app.meeting.flow.idle.candidate_body": "A nearby eligible candidate has just been detected. As soon as you share your location, the meeting flow can be prepared.",
         "app.meeting.flow.idle.candidate_body_local_missing": "A nearby eligible candidate is detected. Your current location is still needed before a neutral meeting point can be prepared.",
@@ -5702,6 +5702,7 @@
     }
 
     async function requestMeetingSetup() {
+      const hasUsableLocation = Boolean(meetingState.currentPosition) && meetingState.permission === "granted" && !meetingState.activeCandidate;
       meetingState.loading = true;
       meetingState.errorKey = "";
       meetingState.meetingPoint = null;
@@ -5713,6 +5714,20 @@
       updateMeetingUI();
 
       try {
+        if (hasUsableLocation) {
+          meetingState.meetingPoint = await findNeutralMeetingPoint(meetingState.currentPosition.lat, meetingState.currentPosition.lng);
+          meetingState.route = null;
+          meetingState.routeError = false;
+          meetingState.routingStatus = "ready";
+          meetingFlowState = "meeting_point_ready";
+          await ensureMeetingMap();
+          meetingState.loading = false;
+          updateMeetingMap();
+          updateMeetingUI();
+          scheduleMatchingSync("location");
+          return;
+        }
+
         if (window.CYPNative?.openMeetingMap) {
           const candidateLocation = meetingState.activeCandidate?.location?.lat != null && meetingState.activeCandidate?.location?.lng != null
             ? {
