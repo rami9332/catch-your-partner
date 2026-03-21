@@ -2109,6 +2109,9 @@
         "app.meeting.flow.idle.title": "Standort noch nicht freigegeben",
         "app.meeting.flow.idle.body": "Gib deinen Standort frei, damit wir einen echten Treffpunkt in deiner Nähe finden und auf der Karte anzeigen können.",
         "app.meeting.flow.idle.cta": "Standort freigeben",
+        "app.meeting.flow.idle.ready_title": "Standort ist bereit",
+        "app.meeting.flow.idle.ready_body": "Dein Standort ist verfuegbar. Sobald ein passender Kandidat oder Treffpunkt vorliegt, fuehrt der Treffen-Flow direkt weiter.",
+        "app.meeting.flow.idle.ready_cta": "Standort aktualisieren",
         "app.meeting.flow.idle.candidate_title": "Passender aktiver Nutzer erkannt",
         "app.meeting.flow.idle.candidate_body": "Ein passender aktiver Nutzer ist gerade in deiner Naehe erkannt worden. Sobald du deinen Standort freigibst, kann der Treffen-Ablauf vorbereitet werden.",
         "app.meeting.flow.idle.candidate_body_local_missing": "Ein passender aktiver Nutzer ist erkannt. Fuer einen neutralen Treffpunkt fehlt noch dein aktueller Standort.",
@@ -2119,6 +2122,9 @@
         "app.meeting.flow.loading.title": "Treffpunkt wird gesucht",
         "app.meeting.flow.loading.body": "Wir holen deinen Standort, suchen einen neutralen öffentlichen Ort und bereiten die Karte vor.",
         "app.meeting.flow.loading.cta": "Wird vorbereitet",
+        "app.meeting.flow.loading.location_title": "Standort wird angefragt",
+        "app.meeting.flow.loading.location_body": "Die App fragt gerade deinen echten Standort an. Danach geht der Treffen-Flow direkt mit Karte und Treffpunkt weiter.",
+        "app.meeting.flow.loading.location_cta": "Standort wird angefragt",
         "app.meeting.flow.meeting_point_ready.title": "Treffpunkt steht",
         "app.meeting.flow.meeting_point_ready.body": "Der Treffpunkt ist gefunden. Als Naechstes startet die Route dorthin.",
         "app.meeting.flow.meeting_point_ready.cta": "Navigation starten",
@@ -2605,6 +2611,9 @@
         "app.meeting.flow.idle.title": "Location not shared yet",
         "app.meeting.flow.idle.body": "Share your location so we can find a real public meet spot nearby and place it on the map.",
         "app.meeting.flow.idle.cta": "Share location",
+        "app.meeting.flow.idle.ready_title": "Location is ready",
+        "app.meeting.flow.idle.ready_body": "Your location is available now. As soon as a matching candidate or meet spot exists, the meeting flow can continue directly.",
+        "app.meeting.flow.idle.ready_cta": "Refresh location",
         "app.meeting.flow.idle.candidate_title": "Nearby candidate detected",
         "app.meeting.flow.idle.candidate_body": "A nearby eligible candidate has just been detected. As soon as you share your location, the meeting flow can be prepared.",
         "app.meeting.flow.idle.candidate_body_local_missing": "A nearby eligible candidate is detected. Your current location is still needed before a neutral meeting point can be prepared.",
@@ -2615,6 +2624,9 @@
         "app.meeting.flow.loading.title": "Finding a meet spot",
         "app.meeting.flow.loading.body": "We are reading your location, looking for a public place nearby and preparing the map.",
         "app.meeting.flow.loading.cta": "Preparing",
+        "app.meeting.flow.loading.location_title": "Requesting location",
+        "app.meeting.flow.loading.location_body": "The app is requesting your real location right now. After that, the meeting flow can continue with map and meet spot.",
+        "app.meeting.flow.loading.location_cta": "Requesting location",
         "app.meeting.flow.meeting_point_ready.title": "Meet spot ready",
         "app.meeting.flow.meeting_point_ready.body": "The meet spot has been found and marked on the map. When you're ready, we can calculate a real route.",
         "app.meeting.flow.meeting_point_ready.cta": "Start navigation",
@@ -5321,7 +5333,7 @@
 
     function openNativeMeetingMap({ meetingPoint = null, candidateLocation = null, acceptance = null, arrival = null, ok = null, meetingContext = null } = {}) {
       return new Promise((resolve, reject) => {
-        if (!window.CYPNative?.openMeetingMap || (!meetingPoint && !candidateLocation)) {
+        if (!window.CYPNative?.openMeetingMap) {
           reject(new Error("native-map-unavailable"));
           return;
         }
@@ -5424,6 +5436,21 @@
         meetingState.routingStatus = "active";
         meetingFlowState = "navigating";
         updateMeetingMap();
+        if (shouldOpenChat) queueMicrotask(() => { openMeetingChat(); });
+        return;
+      }
+
+      if (nativeLocation && !nativePoint && !result?.errorStatus) {
+        meetingState.nativeRouteActive = false;
+        meetingState.route = null;
+        meetingState.routeError = false;
+        meetingState.routingStatus = "idle";
+        meetingState.errorKey = "";
+        meetingFlowState = "idle";
+        updateMeetingMap();
+        if (meetingState.activeCandidate && !meetingState.preparationPending && !meetingState.serverMeeting) {
+          queueMicrotask(() => { prepareMeetingPointFromCandidate(); });
+        }
         if (shouldOpenChat) queueMicrotask(() => { openMeetingChat(); });
         return;
       }
@@ -5686,6 +5713,21 @@
       updateMeetingUI();
 
       try {
+        if (window.CYPNative?.openMeetingMap) {
+          const candidateLocation = meetingState.activeCandidate?.location?.lat != null && meetingState.activeCandidate?.location?.lng != null
+            ? {
+                lat: meetingState.activeCandidate.location.lat,
+                lng: meetingState.activeCandidate.location.lng
+              }
+            : null;
+          const nativeResult = await openNativeMeetingMap({ candidateLocation });
+          applyNativeMeetingMapResult(nativeResult);
+          meetingState.loading = false;
+          updateMeetingUI();
+          scheduleMatchingSync("location");
+          return;
+        }
+
         const position = await getCurrentPosition();
         meetingState.permission = "granted";
         meetingState.currentPosition = {
@@ -5768,10 +5810,12 @@
           scheduleMatchingSync("location");
           return;
         } catch (error) {
-          applyNativeMeetingMapResult({ errorStatus: "map_unavailable", meetingPoint: null, routeMeta: null, location: null });
-          meetingState.loading = false;
-          updateMeetingUI();
-          return;
+          if (error?.message !== "native-map-unavailable" && error?.message !== "native-map-timeout") {
+            applyNativeMeetingMapResult({ errorStatus: "map_unavailable", meetingPoint: null, routeMeta: null, location: null });
+            meetingState.loading = false;
+            updateMeetingUI();
+            return;
+          }
         }
       }
 
@@ -6223,6 +6267,7 @@
       if (!titleEl || !bodyEl || !ctaEl || !sequenceEl || !routeCardEl || !routeTitleEl || !routeSubtitleEl || !routeChipEl || !routeDistanceEl || !routeEtaEl || !permissionChipEl || !routingChipEl) return;
 
       const candidatePreparedState = meetingFlowState === "idle" && Boolean(meetingState.activeCandidate);
+      const locationReadyState = meetingFlowState === "idle" && meetingState.permission === "granted" && !meetingState.activeCandidate && !meetingState.meetingPoint;
       const currentUserId = authState.user?.id || "";
       const acceptedBy = new Set(meetingState.serverMeeting?.accepted_by || []);
       const arrivedBy = new Set(meetingState.serverMeeting?.arrived_by || []);
@@ -6274,13 +6319,26 @@
           ctaEl.textContent = t("app.meeting.flow.navigating.arrive_you_cta");
         }
       } else {
-        titleEl.textContent = candidatePreparedState
-          ? t("app.meeting.flow.idle.candidate_title")
-          : t(`app.meeting.flow.${meetingFlowState}.title`);
-        bodyEl.textContent = candidatePreparedState
-          ? t(meetingState.preparationNoteKey || "app.meeting.flow.idle.candidate_body")
-          : t(meetingState.errorKey && meetingFlowState === "error" ? meetingState.errorKey : `app.meeting.flow.${meetingFlowState}.body`);
-        ctaEl.textContent = t(`app.meeting.flow.${meetingFlowState}.cta`);
+        const loadingLocationState = meetingFlowState === "loading" && meetingState.permission === "requesting";
+        titleEl.textContent = loadingLocationState
+          ? t("app.meeting.flow.loading.location_title")
+          : candidatePreparedState
+            ? t("app.meeting.flow.idle.candidate_title")
+            : locationReadyState
+              ? t("app.meeting.flow.idle.ready_title")
+              : t(`app.meeting.flow.${meetingFlowState}.title`);
+        bodyEl.textContent = loadingLocationState
+          ? t("app.meeting.flow.loading.location_body")
+          : candidatePreparedState
+            ? t(meetingState.preparationNoteKey || "app.meeting.flow.idle.candidate_body")
+            : locationReadyState
+              ? t("app.meeting.flow.idle.ready_body")
+              : t(meetingState.errorKey && meetingFlowState === "error" ? meetingState.errorKey : `app.meeting.flow.${meetingFlowState}.body`);
+        ctaEl.textContent = loadingLocationState
+          ? t("app.meeting.flow.loading.location_cta")
+          : locationReadyState
+            ? t("app.meeting.flow.idle.ready_cta")
+            : t(`app.meeting.flow.${meetingFlowState}.cta`);
       }
 
       ctaEl.disabled = meetingState.loading || meetingFlowState === "loading" || (waitingAcceptanceState && youAccepted) || (arrivalState && ((youArrived && !bothArrived) || (bothArrived && youOk)));
