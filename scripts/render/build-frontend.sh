@@ -11,7 +11,8 @@ cp index.html "$DIST_DIR/index.html"
 
 BACKEND_JSON="null"
 if [ -n "$BACKEND_ORIGIN" ]; then
-  BACKEND_JSON=$(printf '%s' "$BACKEND_ORIGIN" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
+  ESCAPED_BACKEND=$(printf '%s' "$BACKEND_ORIGIN" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  BACKEND_JSON="\"$ESCAPED_BACKEND\""
 fi
 
 cat > "$DIST_DIR/app-config.js" <<EOF
