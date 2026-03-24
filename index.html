@@ -2120,13 +2120,13 @@
         "app.meeting.flow.idle.candidate_body_route_error": "Beide Standorte liegen vor, aber der Treffpunkt konnte gerade nicht vorbereitet werden. Bitte versuche es gleich noch einmal.",
         "app.meeting.flow.idle.candidate_body_meeting_failed": "Der Treffpunkt wurde gefunden, aber das gemeinsame Meeting konnte serverseitig gerade nicht erstellt oder geladen werden.",
         "app.meeting.flow.loading.title": "Treffpunkt wird gesucht",
-        "app.meeting.flow.loading.body": "Wir holen deinen Standort, suchen einen neutralen öffentlichen Ort und bereiten die Karte vor.",
+        "app.meeting.flow.loading.body": "Wir holen deinen Standort, suchen einen neutralen oeffentlichen Ort und fuehren dich direkt in Karte, Treffpunkt und Route weiter.",
         "app.meeting.flow.loading.cta": "Wird vorbereitet",
         "app.meeting.flow.loading.location_title": "Standort wird angefragt",
         "app.meeting.flow.loading.location_body": "Die App fragt gerade deinen echten Standort an. Danach geht der Treffen-Flow direkt mit Karte und Treffpunkt weiter.",
         "app.meeting.flow.loading.location_cta": "Standort wird angefragt",
         "app.meeting.flow.meeting_point_ready.title": "Treffpunkt steht",
-        "app.meeting.flow.meeting_point_ready.body": "Der Treffpunkt ist gefunden. Als Naechstes startet die Route dorthin.",
+        "app.meeting.flow.meeting_point_ready.body": "Der Treffpunkt ist gefunden. Ohne Ruecksprung geht der Flow jetzt direkt in die Route dorthin weiter.",
         "app.meeting.flow.meeting_point_ready.cta": "Navigation starten",
         "app.meeting.flow.meeting_point_ready.accept_you_title": "Treffpunkt steht",
         "app.meeting.flow.meeting_point_ready.accept_you_body": "Der Treffpunkt ist serverseitig festgehalten. Bevor es weitergeht, musst du dieses Treffen noch aktiv annehmen.",
@@ -2138,7 +2138,7 @@
         "app.meeting.flow.meeting_point_ready.accepted_body": "Beide Seiten haben das Treffen angenommen. Jetzt kann die gemeinsame Navigation starten.",
         "app.meeting.flow.meeting_point_ready.accepted_cta": "Navigation starten",
         "app.meeting.flow.navigating.title": "Navigation läuft",
-        "app.meeting.flow.navigating.body": "Die Route laeuft. Karte, Distanz und Zeit bleiben jetzt der Hauptweg bis zur Ankunft.",
+        "app.meeting.flow.navigating.body": "Die Route laeuft. Karte, Treffpunkt, Distanz und Zeit bleiben jetzt klar der Hauptweg bis zur Ankunft.",
         "app.meeting.flow.navigating.cta": "Standort aktualisieren",
         "app.meeting.flow.navigating.arrive_you_title": "Treffpunkt fast erreicht",
         "app.meeting.flow.navigating.arrive_you_body": "Sobald du am Treffpunkt bist, bestaetigst du deine Ankunft serverseitig fuer dieses gemeinsame Meeting.",
@@ -2244,11 +2244,11 @@
         "app.profile.scan.title.requesting": "Kamera wird vorbereitet",
         "app.profile.scan.body.requesting": "Kamerazugriff wird angefragt. Danach beginnt der eigentliche Scan.",
         "app.profile.scan.title.active": "Gesicht ausrichten",
-        "app.profile.scan.body.active": "Der native Scan fuehrt jetzt echte Liveness-Schritte. Erst geradeaus, dann links und rechts, danach folgt der Verifizierungsframe.",
+        "app.profile.scan.body.active": "Der native Scan fuehrt jetzt einen gefuehrten Liveness-Ablauf. Erst ausrichten, dann geradeaus, danach links und rechts, und erst dann folgt der finale Verifizierungsframe.",
         "app.profile.scan.title.processing": "Scan läuft",
-        "app.profile.scan.body.processing": "Der Liveness-Scan prueft gerade echte Kopfbewegung und danach den finalen Verifizierungsframe.",
+        "app.profile.scan.body.processing": "Der Liveness-Scan prueft gerade echte Kopfbewegung, Haltedauer und danach den finalen Verifizierungsframe.",
         "app.profile.scan.title.success": "Verifizierung erfolgreich",
-        "app.profile.scan.body.success": "Die Liveness-Pruefung wurde erfolgreich durchlaufen. Erst danach wurde die Verifizierung freigegeben.",
+        "app.profile.scan.body.success": "Die gefuehrte Liveness-Pruefung wurde erfolgreich durchlaufen. Erst danach wurde die Verifizierung freigegeben.",
         "app.profile.scan.title.no_face": "Kein Gesicht erkannt",
         "app.profile.scan.body.no_face": "Es wurde kein Gesicht erkannt. Richte dein Gesicht neu aus und pruefe noch einmal.",
         "app.profile.scan.title.multiple_faces": "Mehrere Gesichter erkannt",
@@ -4483,8 +4483,28 @@
       };
     }
 
+    function meetingFlowRank(flow) {
+      switch (flow) {
+        case "arrived":
+          return 4;
+        case "navigating":
+          return 3;
+        case "meeting_point_ready":
+          return 2;
+        case "loading":
+          return 1;
+        case "idle":
+        case "error":
+        default:
+          return 0;
+      }
+    }
+
     function applyServerMeeting(meeting) {
       if (!meeting) return;
+      const previousFlowState = meetingFlowState;
+      const previousRoutingStatus = meetingState.routingStatus;
+      const hadActiveRoute = Boolean(meetingState.route) || meetingState.nativeRouteActive || previousRoutingStatus === "active" || previousFlowState === "navigating";
       meetingState.serverMeeting = meeting;
       meetingState.meetingPoint = {
         name: meeting.spot_name,
@@ -4501,9 +4521,18 @@
           meetingState.lastLocationAt = localLocation.updatedAt ?? new Date().toISOString();
         }
       }
-      meetingState.route = null;
+      if (!hadActiveRoute || meeting.status === "checked_in") {
+        meetingState.route = meeting.status === "checked_in" ? meetingState.route : null;
+      }
       meetingState.routeError = false;
-      meetingState.routingStatus = meeting.status === "navigating" ? "active" : meeting.status === "checked_in" ? "arrived" : "ready";
+      const serverRoutingStatus = meeting.status === "navigating"
+        ? "active"
+        : meeting.status === "checked_in"
+          ? "arrived"
+          : "ready";
+      meetingState.routingStatus = hadActiveRoute && serverRoutingStatus === "ready"
+        ? "active"
+        : serverRoutingStatus;
       meetingState.errorKey = "";
       meetingState.preparationNoteKey = "";
       if (!meeting.chat_unlocked) {
@@ -4512,7 +4541,14 @@
         meetingState.lastChatSyncAt = "";
         stopChatLiveRefresh();
       }
-      meetingFlowState = meeting.status === "checked_in" ? "arrived" : "meeting_point_ready";
+      const serverFlowState = meeting.status === "checked_in"
+        ? "arrived"
+        : (meeting.status === "navigating" || (hadActiveRoute && serverRoutingStatus === "active"))
+          ? "navigating"
+          : "meeting_point_ready";
+      meetingFlowState = meetingFlowRank(previousFlowState) > meetingFlowRank(serverFlowState)
+        ? previousFlowState
+        : serverFlowState;
     }
 
     async function loadSharedMeetingForCandidate() {
@@ -4983,24 +5019,37 @@
       const nextCandidate = Array.isArray(candidates) && candidates.length ? candidates[0] : null;
       const currentId = meetingState.activeCandidate?.user_id || "";
       const nextId = nextCandidate?.user_id || "";
+      const advancedMeetingFlowActive = Boolean(
+        meetingState.serverMeeting
+        || meetingState.meetingPoint
+        || meetingState.route
+        || meetingFlowState === "meeting_point_ready"
+        || meetingFlowState === "navigating"
+        || meetingFlowState === "arrived"
+        || meetingState.routingStatus === "ready"
+        || meetingState.routingStatus === "active"
+        || meetingState.routingStatus === "arrived"
+      );
 
       if (!nextCandidate) {
         meetingState.activeCandidate = null;
-        meetingState.serverMeeting = null;
-        meetingState.preparationNoteKey = "";
-        meetingState.preparationPending = false;
-        meetingState.chatOpen = false;
-        meetingState.chatLoading = false;
-        meetingState.chatMessages = [];
-        meetingState.chatError = "";
-        meetingState.lastChatSyncAt = "";
-        stopChatLiveRefresh();
-        meetingState.meetingPoint = null;
-        meetingState.route = null;
-        meetingState.routeError = false;
-        meetingState.routingStatus = "idle";
-        stopMeetingWatch();
-        meetingFlowState = "idle";
+        if (!advancedMeetingFlowActive) {
+          meetingState.serverMeeting = null;
+          meetingState.preparationNoteKey = "";
+          meetingState.preparationPending = false;
+          meetingState.chatOpen = false;
+          meetingState.chatLoading = false;
+          meetingState.chatMessages = [];
+          meetingState.chatError = "";
+          meetingState.lastChatSyncAt = "";
+          stopChatLiveRefresh();
+          meetingState.meetingPoint = null;
+          meetingState.route = null;
+          meetingState.routeError = false;
+          meetingState.routingStatus = "idle";
+          stopMeetingWatch();
+          meetingFlowState = "idle";
+        }
         updateMeetingUI();
         return;
       }
@@ -5010,6 +5059,12 @@
         if (!meetingState.meetingPoint) {
           prepareMeetingPointFromCandidate();
         }
+        updateMeetingUI();
+        return;
+      }
+
+      if (advancedMeetingFlowActive) {
+        meetingState.activeCandidate = nextCandidate;
         updateMeetingUI();
         return;
       }
@@ -5467,6 +5522,9 @@
         meetingState.routeError = false;
         meetingState.routingStatus = "idle";
         meetingState.errorKey = "";
+        meetingState.preparationNoteKey = meetingState.activeCandidate
+          ? "app.meeting.flow.idle.candidate_body"
+          : "";
         meetingFlowState = "idle";
         updateMeetingMap();
         if (meetingState.activeCandidate && !meetingState.preparationPending && !meetingState.serverMeeting) {
@@ -5779,21 +5837,30 @@
             : null;
           const nativeResult = await openNativeMeetingMap({ candidateLocation });
           applyNativeMeetingMapResult(nativeResult);
-          meetingState.loading = false;
-          updateMeetingUI();
-          scheduleMatchingSync("location");
-          return;
+          if (meetingState.meetingPoint || nativeResult?.errorStatus === "location_denied" || nativeResult?.errorStatus === "location_unavailable" || nativeResult?.errorStatus === "map_unavailable") {
+            meetingState.loading = false;
+            updateMeetingUI();
+            scheduleMatchingSync("location");
+            return;
+          }
         }
 
-        const position = await getCurrentPosition();
-        meetingState.permission = "granted";
-        meetingState.currentPosition = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-        meetingState.lastLocationAt = new Date().toISOString();
+        if (!meetingState.currentPosition) {
+          const position = await getCurrentPosition();
+          meetingState.permission = "granted";
+          meetingState.currentPosition = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          meetingState.lastLocationAt = new Date().toISOString();
+        }
 
-        meetingState.meetingPoint = await findNeutralMeetingPoint(position.coords.latitude, position.coords.longitude);
+        if (meetingState.activeCandidate?.location?.lat != null && meetingState.activeCandidate?.location?.lng != null) {
+          const midpoint = midpointBetween(meetingState.currentPosition, meetingState.activeCandidate.location);
+          meetingState.meetingPoint = await findNeutralMeetingPoint(midpoint.lat, midpoint.lng);
+        } else {
+          meetingState.meetingPoint = await findNeutralMeetingPoint(meetingState.currentPosition.lat, meetingState.currentPosition.lng);
+        }
         await calculateMeetingRoute();
         meetingState.routingStatus = meetingState.route ? "active" : "ready";
         meetingFlowState = meetingState.route ? "navigating" : "meeting_point_ready";
@@ -5858,7 +5925,8 @@
             ? {
                 meetingId: meetingState.serverMeeting.id,
                 backendOrigin: getBackendOrigin(),
-                authToken: authState.token
+                authToken: authState.token,
+                currentUserId
               }
             : null;
           const nativeResult = await openNativeMeetingMap({ meetingPoint: meetingState.meetingPoint, acceptance, arrival, ok, meetingContext });
