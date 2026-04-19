@@ -385,6 +385,7 @@
     .companion-presence {
       --presence-x: 78vw;
       --presence-y: 22vh;
+      --presence-flip: 1;
       position: absolute;
       left: 0;
       top: 0;
@@ -407,12 +408,13 @@
       inset: 0;
       transform-origin: center bottom;
       animation: companionDragonBob 4.8s ease-in-out infinite;
+      transition: transform 220ms ease;
     }
 
-    .companion-presence[data-stage="hatchling"] .companion-dragon { transform: scale(0.78); }
-    .companion-presence[data-stage="scout"] .companion-dragon { transform: scale(0.9); }
-    .companion-presence[data-stage="runner"] .companion-dragon { transform: scale(1.04); }
-    .companion-presence[data-stage="guardian"] .companion-dragon { transform: scale(1.16); }
+    .companion-presence[data-stage="hatchling"] .companion-dragon { transform: scaleX(var(--presence-flip)) scale(0.78); }
+    .companion-presence[data-stage="scout"] .companion-dragon { transform: scaleX(var(--presence-flip)) scale(0.9); }
+    .companion-presence[data-stage="runner"] .companion-dragon { transform: scaleX(var(--presence-flip)) scale(1.04); }
+    .companion-presence[data-stage="guardian"] .companion-dragon { transform: scaleX(var(--presence-flip)) scale(1.16); }
 
     .dragon-shell {
       position: absolute;
@@ -695,6 +697,45 @@
       overflow: hidden;
     }
 
+    .companion-presence-whisper {
+      position: absolute;
+      left: 50%;
+      top: -14px;
+      transform: translateX(-50%) translateY(4px) scale(0.94);
+      max-width: 160px;
+      padding: 8px 10px;
+      border-radius: 16px;
+      background: rgba(11, 16, 24, 0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+      backdrop-filter: blur(16px);
+      color: rgba(255, 243, 220, 0.94);
+      font-size: 11px;
+      line-height: 1.35;
+      opacity: 0;
+      transition: opacity 180ms ease, transform 180ms ease;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .companion-presence-whisper::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      width: 14px;
+      height: 14px;
+      transform: translateX(-50%) rotate(45deg);
+      background: rgba(11, 16, 24, 0.88);
+      border-right: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .companion-presence.is-speaking .companion-presence-whisper {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+
     .companion-presence-kicker {
       color: rgba(255, 224, 154, 0.96);
       font-size: 9px;
@@ -733,6 +774,13 @@
         bottom: -8px;
         max-width: 82px;
         padding: 4px 6px;
+      }
+
+      .companion-presence-whisper {
+        max-width: 132px;
+        top: -8px;
+        font-size: 10px;
+        padding: 7px 8px;
       }
 
       .companion-presence-kicker {
@@ -3718,6 +3766,7 @@
 
     <div class="companion-presence-layer app-only" id="companionPresenceLayer" aria-hidden="true">
       <div class="companion-presence" id="companionPresence">
+        <div class="companion-presence-whisper" id="companionPresenceWhisper"></div>
         <div class="companion-presence-hud">
           <div class="companion-presence-kicker" id="companionPresenceKicker"></div>
           <div class="companion-presence-title" id="companionPresenceTitle"></div>
@@ -5201,6 +5250,8 @@
       });
       renderEntryCompanion();
       renderCompanionPresence();
+      const next = resolveCompanionPresence();
+      if (next?.whisper) speakPresence(next.whisper, 2200);
       reconcileChatLiveRefresh();
     }
 
@@ -5366,6 +5417,17 @@
       currentY: typeof window !== "undefined" ? window.innerHeight * 0.22 : 140,
       targetX: typeof window !== "undefined" ? window.innerWidth * 0.78 : 320,
       targetY: typeof window !== "undefined" ? window.innerHeight * 0.22 : 140,
+      anchorX: typeof window !== "undefined" ? window.innerWidth * 0.62 : 240,
+      anchorY: typeof window !== "undefined" ? window.innerHeight * 0.42 : 260,
+      driftX: 0,
+      driftY: 0,
+      driftSeed: Math.random() * Math.PI * 2,
+      facing: 1,
+      avoidX: null,
+      avoidY: null,
+      avoidUntil: 0,
+      speech: "",
+      speechUntil: 0,
       running: false
     };
 
@@ -8036,6 +8098,34 @@
       });
     }
 
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function speakPresence(text, duration = 2600) {
+      companionPresenceState.speech = String(text || "").trim();
+      companionPresenceState.speechUntil = companionPresenceState.speech ? Date.now() + duration : 0;
+      renderCompanionPresence();
+    }
+
+    function pushCompanionAwayFromPoint(x, y, intensity = 1) {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      companionPresenceState.avoidX = x;
+      companionPresenceState.avoidY = y;
+      companionPresenceState.avoidUntil = Date.now() + Math.round(1200 * clamp(intensity, 0.6, 1.8));
+    }
+
+    function companionInterestTargetFromEventTarget(target) {
+      const interactive = target?.closest?.("button, a, input, textarea, select, [role='button'], .nav-button, .button, .mini-pill");
+      if (!interactive) return null;
+      const rect = interactive.getBoundingClientRect();
+      return {
+        x: rect.left + (rect.width / 2),
+        y: rect.top + (rect.height / 2),
+        label: interactive.textContent?.trim() || interactive.getAttribute("aria-label") || ""
+      };
+    }
+
     function resolveCompanionPresence() {
       const activeScreenName = document.querySelector(".screen.active:not(.debug-only)")?.dataset.screen || "welcome";
       const width = window.innerWidth || 390;
@@ -8050,62 +8140,98 @@
 
       if (activeScreenName === "welcome") {
         return {
-          x: width * 0.72,
-          y: height * 0.16,
+          x: width * 0.56,
+          y: height * 0.24,
           label: "Baby Dragon",
           status: "schluepft",
           stage: "hatchling",
           walking: false,
           fed: false,
           pill1: "Ei",
-          pill2: "Mini"
+          pill2: "Mini",
+          whisper: "Ich bin bei dir und halte den Weg frei.",
+          driftRadiusX: width * 0.12,
+          driftRadiusY: height * 0.08
         };
       }
       if (activeScreenName === "explain") {
         return {
-          x: width * 0.18,
-          y: height * 0.24,
+          x: width * 0.52,
+          y: height * 0.3,
           label: "Guide Drake",
           status: "lernt deinen Flow",
           stage: "hatchling",
           walking: false,
           fed: false,
           pill1: "Guide",
-          pill2: "Warm"
+          pill2: "Warm",
+          whisper: "Ich zeige, stoere aber nicht.",
+          driftRadiusX: width * 0.14,
+          driftRadiusY: height * 0.1
         };
       }
       if (activeScreenName === "auth") {
         const loginMode = authMode === "login";
         return {
-          x: width * 0.8,
-          y: height * 0.18,
+          x: width * 0.56,
+          y: height * 0.22,
           label: loginMode ? "Login Drake" : "Nest Builder",
           status: loginMode ? "wartet auf dich" : "waechst durchs Onboarding",
           stage: "hatchling",
           walking: false,
           fed: false,
           pill1: loginMode ? "Login" : "Nest",
-          pill2: "Soft"
+          pill2: "Soft",
+          whisper: loginMode ? "Tippe ruhig. Ich weiche aus." : "Ich halte dir Platz frei.",
+          driftRadiusX: width * 0.1,
+          driftRadiusY: height * 0.08
         };
       }
       if (activeScreenName === "chat") {
         return {
-          x: width * 0.78,
-          y: height * 0.12,
+          x: width * 0.58,
+          y: height * 0.18,
           label: "Chat Drake",
           status: "lauscht",
           stage: "runner",
           walking: false,
           fed: true,
           pill1: "Chat",
-          pill2: "Calm"
+          pill2: "Calm",
+          whisper: "Ich hoere mit.",
+          driftRadiusX: width * 0.08,
+          driftRadiusY: height * 0.05
         };
       }
       const roomMap = {
-        radar: { x: width * 0.84, y: height * 0.74, side: "left" },
-        treffen: { x: width * 0.82, y: height * 0.26, side: "left" },
-        profil: { x: width * 0.18, y: height * 0.38, side: "right" },
-        more: { x: width * 0.82, y: height * 0.24, side: "left" }
+        radar: {
+          x: width * 0.58,
+          y: height * 0.56,
+          driftRadiusX: width * 0.16,
+          driftRadiusY: height * 0.11,
+          whisper: radarActive ? "Dein Radar ist offen. Ich halte den Raum frei." : "Ich kreise mitten im Radar-Raum."
+        },
+        treffen: {
+          x: width * 0.52,
+          y: height * 0.34,
+          driftRadiusX: width * 0.15,
+          driftRadiusY: height * 0.1,
+          whisper: "Ich begleite euch Richtung Date."
+        },
+        profil: {
+          x: width * 0.42,
+          y: height * 0.42,
+          driftRadiusX: width * 0.12,
+          driftRadiusY: height * 0.1,
+          whisper: "Hier lese ich deinen Vibe."
+        },
+        more: {
+          x: width * 0.56,
+          y: height * 0.28,
+          driftRadiusX: width * 0.1,
+          driftRadiusY: height * 0.08,
+          whisper: "Hier spreche ich am meisten."
+        }
       };
       const roomConfig = roomMap[activeRoom] || roomMap.radar;
       const growthStage = companionState.xp >= 700
@@ -8156,7 +8282,10 @@
             ? "Walk"
             : fed
               ? "Fed"
-              : "Hungry"
+              : "Hungry",
+        whisper: roomConfig.whisper,
+        driftRadiusX: roomConfig.driftRadiusX,
+        driftRadiusY: roomConfig.driftRadiusY
       };
     }
 
@@ -8166,18 +8295,31 @@
       const titleEl = document.getElementById("companionPresenceTitle");
       const pill1El = document.getElementById("companionPresencePill1");
       const pill2El = document.getElementById("companionPresencePill2");
-      if (!presenceEl || !kickerEl || !titleEl || !pill1El || !pill2El) return;
+      const whisperEl = document.getElementById("companionPresenceWhisper");
+      if (!presenceEl || !kickerEl || !titleEl || !pill1El || !pill2El || !whisperEl) return;
 
       const next = resolveCompanionPresence();
-      companionPresenceState.targetX = next.x;
-      companionPresenceState.targetY = next.y;
+      companionPresenceState.anchorX = next.x;
+      companionPresenceState.anchorY = next.y;
       presenceEl.dataset.stage = next.stage;
       presenceEl.classList.toggle("is-walking", Boolean(next.walking));
       presenceEl.classList.toggle("is-fed", Boolean(next.fed));
+      presenceEl.classList.toggle("is-speaking", companionPresenceState.speechUntil > Date.now() && Boolean(companionPresenceState.speech));
       kickerEl.textContent = next.label;
       titleEl.textContent = next.status;
       pill1El.textContent = next.pill1;
       pill2El.textContent = next.pill2;
+      whisperEl.textContent = companionPresenceState.speechUntil > Date.now() && companionPresenceState.speech
+        ? companionPresenceState.speech
+        : "";
+      if (!companionPresenceState.speechUntil || companionPresenceState.speechUntil <= Date.now()) {
+        whisperEl.textContent = "";
+      }
+      if (!companionPresenceState.speechUntil || companionPresenceState.speechUntil <= Date.now()) {
+        companionPresenceState.speech = "";
+      }
+      companionPresenceState.driftRadiusX = next.driftRadiusX || 0;
+      companionPresenceState.driftRadiusY = next.driftRadiusY || 0;
     }
 
     function startCompanionPresenceLoop() {
@@ -8186,10 +8328,41 @@
       const step = () => {
         const presenceEl = document.getElementById("companionPresence");
         if (presenceEl) {
-          companionPresenceState.currentX += (companionPresenceState.targetX - companionPresenceState.currentX) * 0.08;
-          companionPresenceState.currentY += (companionPresenceState.targetY - companionPresenceState.currentY) * 0.08;
+          const now = Date.now();
+          const time = now / 1000;
+          const driftX = Math.sin(time * 0.8 + companionPresenceState.driftSeed) * (companionPresenceState.driftRadiusX || 0);
+          const driftY = Math.cos(time * 1.05 + companionPresenceState.driftSeed * 0.8) * (companionPresenceState.driftRadiusY || 0);
+          let nextX = companionPresenceState.anchorX + driftX;
+          let nextY = companionPresenceState.anchorY + driftY;
+          if (companionPresenceState.avoidUntil > now && Number.isFinite(companionPresenceState.avoidX) && Number.isFinite(companionPresenceState.avoidY)) {
+            const dx = nextX - companionPresenceState.avoidX;
+            const dy = nextY - companionPresenceState.avoidY;
+            const distance = Math.max(1, Math.hypot(dx, dy));
+            const push = clamp((190 - distance) / 190, 0, 1) * 150;
+            nextX += (dx / distance) * push;
+            nextY += (dy / distance) * push;
+          }
+          const safeLeft = 34;
+          const safeRight = (window.innerWidth || 390) - 112;
+          const safeTop = 72;
+          const safeBottom = (window.innerHeight || 844) - 196;
+          nextX = clamp(nextX, safeLeft, safeRight);
+          nextY = clamp(nextY, safeTop, safeBottom);
+          companionPresenceState.targetX = nextX;
+          companionPresenceState.targetY = nextY;
           presenceEl.style.setProperty("--presence-x", `${companionPresenceState.currentX}px`);
           presenceEl.style.setProperty("--presence-y", `${companionPresenceState.currentY}px`);
+          companionPresenceState.currentX += (companionPresenceState.targetX - companionPresenceState.currentX) * 0.065;
+          companionPresenceState.currentY += (companionPresenceState.targetY - companionPresenceState.currentY) * 0.065;
+          companionPresenceState.facing = companionPresenceState.targetX < companionPresenceState.currentX ? -1 : 1;
+          presenceEl.style.setProperty("--presence-flip", String(companionPresenceState.facing));
+          presenceEl.style.setProperty("--presence-x", `${companionPresenceState.currentX}px`);
+          presenceEl.style.setProperty("--presence-y", `${companionPresenceState.currentY}px`);
+          presenceEl.classList.toggle("is-speaking", companionPresenceState.speechUntil > now && Boolean(companionPresenceState.speech));
+          const whisperEl = document.getElementById("companionPresenceWhisper");
+          if (whisperEl) {
+            whisperEl.textContent = companionPresenceState.speechUntil > now ? companionPresenceState.speech : "";
+          }
         }
         window.requestAnimationFrame(step);
       };
@@ -9412,6 +9585,8 @@
       updateTabBanner();
       renderCompanionUI();
       renderCompanionPresence();
+      const next = resolveCompanionPresence();
+      if (next?.whisper) speakPresence(next.whisper, 2200);
     }
 
     function updateTabBanner() {
@@ -10053,6 +10228,33 @@
 
     document.querySelectorAll("[data-action='go-screen']").forEach((button) => {
       button.addEventListener("click", () => activateScreen(button.dataset.targetScreen));
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      const target = companionInterestTargetFromEventTarget(event.target);
+      if (!target) return;
+      pushCompanionAwayFromPoint(target.x, target.y, 1.2);
+      if (target.label) {
+        speakPresence(`Ich mache Platz fuer ${target.label}.`, 1800);
+      }
+    }, true);
+
+    document.addEventListener("focusin", (event) => {
+      const target = companionInterestTargetFromEventTarget(event.target);
+      if (!target) return;
+      pushCompanionAwayFromPoint(target.x, target.y, 1);
+      speakPresence("Ich weiche aus, damit du leicht tippen kannst.", 1800);
+    });
+
+    document.addEventListener("pointermove", (event) => {
+      const interactive = document.elementFromPoint(event.clientX, event.clientY);
+      const target = companionInterestTargetFromEventTarget(interactive);
+      if (!target) return;
+      pushCompanionAwayFromPoint(target.x, target.y, 0.8);
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      renderCompanionPresence();
     });
 
     document.querySelectorAll("[data-auth-mode]").forEach((button) => {
