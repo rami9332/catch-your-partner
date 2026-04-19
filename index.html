@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catch Your Partner</title>
+  <title>Aroundly</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
     window.__CYP_RUNTIME_CONFIG__ = window.__CYP_RUNTIME_CONFIG__ || {};
@@ -275,6 +275,271 @@
       color: var(--muted);
       font-size: 15px;
       line-height: 1.45;
+    }
+
+    .entry-companion {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 209, 102, 0.1);
+      background:
+        radial-gradient(circle at top left, rgba(255, 190, 92, 0.14), transparent 34%),
+        radial-gradient(circle at 85% 20%, rgba(113, 209, 255, 0.12), transparent 28%),
+        linear-gradient(180deg, rgba(16, 24, 35, 0.96), rgba(13, 19, 28, 0.96));
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+    }
+
+    .entry-companion::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.05) 24%, transparent 46%);
+      transform: translateX(-100%);
+      animation: companionSweep 8.5s linear infinite;
+      pointer-events: none;
+    }
+
+    .entry-companion-head,
+    .entry-companion-status,
+    .entry-companion-actions {
+      position: relative;
+      z-index: 1;
+    }
+
+    .entry-companion-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .entry-companion-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255,255,255,0.95), rgba(255,255,255,0.16) 20%, transparent 34%),
+        radial-gradient(circle at 50% 52%, rgba(255, 184, 84, 0.96), rgba(255, 122, 75, 0.76) 36%, rgba(51, 108, 120, 0.82) 84%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 18px 28px rgba(0,0,0,0.24);
+    }
+
+    .entry-companion-copy {
+      display: grid;
+      gap: 4px;
+    }
+
+    .entry-companion-kicker {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .entry-companion-title {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 18px;
+      line-height: 1.1;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .entry-companion-body {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .entry-companion-status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .entry-companion-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .entry-companion-actions .button {
+      min-height: 48px;
+    }
+
+    .entry-companion,
+    .companion-rail,
+    .companion-dock {
+      display: none !important;
+    }
+
+    .companion-presence-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .companion-presence {
+      --presence-x: 78vw;
+      --presence-y: 22vh;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 126px;
+      height: 126px;
+      transform: translate3d(var(--presence-x), var(--presence-y), 0);
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .companion-presence-core {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.32));
+    }
+
+    .companion-presence-orb {
+      position: absolute;
+      inset: 16px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 26%, rgba(255,255,255,0.98), rgba(255,255,255,0.18) 16%, transparent 30%),
+        radial-gradient(circle at 50% 54%, rgba(255, 193, 105, 0.98), rgba(255, 133, 83, 0.78) 34%, rgba(48, 104, 124, 0.82) 82%);
+      box-shadow:
+        inset -24px -24px 38px rgba(0,0,0,0.2),
+        inset 14px 18px 24px rgba(255,255,255,0.16),
+        0 18px 38px rgba(0,0,0,0.18);
+      animation: companionPresenceFloat 5.2s ease-in-out infinite;
+    }
+
+    .companion-presence-ring,
+    .companion-presence-ring.secondary,
+    .companion-presence-ring.tertiary {
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 208, 122, 0.22);
+      animation: orbitSpin 13s linear infinite;
+    }
+
+    .companion-presence-ring.secondary {
+      inset: -12px;
+      border-color: rgba(113, 209, 255, 0.18);
+      animation-duration: 16s;
+      animation-direction: reverse;
+    }
+
+    .companion-presence-ring.tertiary {
+      inset: -24px;
+      border-color: rgba(255,255,255,0.1);
+      animation-duration: 20s;
+    }
+
+    .companion-presence-glow {
+      position: absolute;
+      inset: -34px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 194, 109, 0.18), rgba(113, 209, 255, 0.06) 44%, rgba(255,255,255,0) 70%);
+      filter: blur(18px);
+      animation: companionPresencePulse 4.6s ease-in-out infinite;
+    }
+
+    .companion-presence-shadow {
+      position: absolute;
+      left: 50%;
+      bottom: -8px;
+      width: 120px;
+      height: 28px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 184, 84, 0.22), rgba(0,0,0,0));
+      filter: blur(10px);
+      animation: floorPulse 4.2s ease-in-out infinite;
+    }
+
+    .companion-presence-bubble {
+      position: absolute;
+      min-width: 180px;
+      max-width: 240px;
+      padding: 12px 14px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(16, 23, 34, 0.96), rgba(13, 19, 28, 0.96));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 36px rgba(0,0,0,0.26);
+      backdrop-filter: blur(16px);
+      pointer-events: auto;
+    }
+
+    .companion-presence-bubble::after {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: inherit;
+      border-left: 1px solid rgba(255,255,255,0.08);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      transform: rotate(45deg);
+    }
+
+    .companion-presence[data-bubble-side="left"] .companion-presence-bubble {
+      right: calc(100% + 14px);
+      top: 6px;
+    }
+
+    .companion-presence[data-bubble-side="left"] .companion-presence-bubble::after {
+      right: -8px;
+      top: 22px;
+    }
+
+    .companion-presence[data-bubble-side="right"] .companion-presence-bubble {
+      left: calc(100% + 14px);
+      top: 6px;
+    }
+
+    .companion-presence[data-bubble-side="right"] .companion-presence-bubble::after {
+      left: -8px;
+      top: 22px;
+    }
+
+    .companion-presence-kicker {
+      color: var(--gold);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .companion-presence-title {
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 16px;
+      line-height: 1.08;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .companion-presence-body {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .companion-presence-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .companion-presence-pills .mini-pill {
+      font-size: 10px;
+      padding: 6px 9px;
+      background: rgba(255,255,255,0.04);
     }
 
     .step-list {
@@ -1061,6 +1326,130 @@
       gap: 14px;
     }
 
+    .profile-section-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-overview-card,
+    .profile-summary-card {
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-overview-head {
+      display: grid;
+      gap: 6px;
+    }
+
+    .profile-overview-head p,
+    .profile-compact-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .profile-actions-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-summary-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .profile-summary-card {
+      padding: 14px;
+      border-radius: 20px;
+      background: var(--card-subtle-bg);
+      border: 1px solid rgba(255, 209, 102, 0.06);
+    }
+
+    .profile-summary-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .profile-summary-value {
+      color: var(--text);
+      font-size: 20px;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .profile-section-heading {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .profile-section-heading h3,
+    .profile-section-heading h4 {
+      margin: 0;
+    }
+
+    .profile-compact-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .profile-safety-shell {
+      display: grid;
+      gap: 12px;
+    }
+
+    .profile-collapsible {
+      border-radius: 20px;
+      background: var(--card-subtle-bg);
+      border: 1px solid rgba(255, 209, 102, 0.06);
+      overflow: hidden;
+    }
+
+    .profile-collapsible summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .profile-collapsible summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .profile-collapsible summary::after {
+      content: "+";
+      color: var(--gold);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .profile-collapsible[open] summary::after {
+      content: "–";
+    }
+
+    .profile-collapsible-body {
+      display: grid;
+      gap: 12px;
+      padding: 0 14px 14px;
+    }
+
+    @media (min-width: 920px) {
+      .profile-actions-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     .trust-levels {
       display: grid;
       gap: 10px;
@@ -1415,6 +1804,890 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
+
+    body.auth-bypass .welcome-screen,
+    body.auth-bypass .explain-screen,
+    body.auth-bypass .auth-screen {
+      display: none !important;
+    }
+
+    .companion-shell {
+      display: grid;
+      gap: 18px;
+    }
+
+    .companion-rail {
+      position: relative;
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 209, 102, 0.12);
+      background:
+        radial-gradient(circle at top left, rgba(255, 190, 92, 0.16), transparent 32%),
+        radial-gradient(circle at 85% 20%, rgba(113, 209, 255, 0.14), transparent 28%),
+        linear-gradient(180deg, rgba(14, 22, 35, 0.98), rgba(12, 19, 28, 0.98));
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255,255,255,0.04);
+      display: grid;
+      gap: 14px;
+    }
+
+    .companion-rail::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.06) 24%, transparent 48%);
+      transform: translateX(-100%);
+      animation: companionSweep 8s linear infinite;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .companion-rail-head,
+    .companion-rail-meta,
+    .companion-rail-actions {
+      position: relative;
+      z-index: 1;
+    }
+
+    .companion-rail-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .companion-rail-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.92), rgba(255,255,255,0.14) 22%, transparent 38%),
+        radial-gradient(circle at 50% 52%, rgba(255, 182, 85, 0.96), rgba(255, 120, 72, 0.74) 34%, rgba(51, 108, 120, 0.8) 82%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 18px 28px rgba(0,0,0,0.22);
+    }
+
+    .companion-rail-copy {
+      display: grid;
+      gap: 4px;
+    }
+
+    .companion-rail-kicker {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .companion-rail-title {
+      color: var(--text);
+      font-size: 18px;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .companion-rail-body {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .companion-rail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .companion-rail-path {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .companion-rail-node {
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+      transition: transform 220ms ease, background 220ms ease, color 220ms ease, border-color 220ms ease;
+    }
+
+    .companion-rail-node.is-passed {
+      color: rgba(255,255,255,0.86);
+      background: rgba(113, 209, 255, 0.1);
+    }
+
+    .companion-rail-node.is-active {
+      color: #09131b;
+      background: linear-gradient(180deg, rgba(255, 207, 120, 0.98), rgba(255, 183, 82, 0.92));
+      border-color: rgba(255, 214, 144, 0.42);
+      transform: translateY(-2px);
+    }
+
+    .companion-rail-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .companion-stage {
+      --companion-room-x: 0px;
+      --companion-room-y: 24px;
+      position: relative;
+      min-height: 260px;
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 187, 92, 0.22), transparent 34%),
+        radial-gradient(circle at 80% 25%, rgba(114, 214, 255, 0.2), transparent 28%),
+        linear-gradient(180deg, rgba(9, 17, 29, 0.94), rgba(15, 30, 36, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 18px 40px rgba(0,0,0,0.28);
+    }
+
+    .companion-stage[data-room="radar"] {
+      background:
+        radial-gradient(circle at 22% 26%, rgba(255, 190, 92, 0.22), transparent 34%),
+        radial-gradient(circle at 78% 22%, rgba(70, 223, 255, 0.24), transparent 30%),
+        linear-gradient(180deg, rgba(7, 18, 34, 0.96), rgba(7, 37, 44, 0.98));
+    }
+
+    .companion-stage[data-room="treffen"] {
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255, 161, 117, 0.24), transparent 34%),
+        radial-gradient(circle at 78% 30%, rgba(255, 213, 98, 0.18), transparent 30%),
+        linear-gradient(180deg, rgba(18, 16, 29, 0.96), rgba(35, 24, 32, 0.98));
+    }
+
+    .companion-stage[data-room="profil"] {
+      background:
+        radial-gradient(circle at 24% 18%, rgba(114, 214, 255, 0.22), transparent 32%),
+        radial-gradient(circle at 80% 22%, rgba(114, 255, 202, 0.14), transparent 26%),
+        linear-gradient(180deg, rgba(6, 24, 28, 0.96), rgba(13, 30, 28, 0.98));
+    }
+
+    .companion-stage[data-room="more"] {
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255, 201, 107, 0.2), transparent 32%),
+        radial-gradient(circle at 82% 28%, rgba(150, 200, 255, 0.18), transparent 28%),
+        linear-gradient(180deg, rgba(16, 20, 31, 0.96), rgba(19, 25, 37, 0.98));
+    }
+
+    .companion-stage::before,
+    .companion-stage::after {
+      content: "";
+      position: absolute;
+      inset: auto;
+      border-radius: 999px;
+      filter: blur(10px);
+      opacity: 0.8;
+    }
+
+    .companion-stage::before {
+      width: 120px;
+      height: 120px;
+      top: 24px;
+      left: 18px;
+      background: rgba(255, 178, 82, 0.16);
+      animation: drift 8s ease-in-out infinite;
+    }
+
+    .companion-stage::after {
+      width: 160px;
+      height: 160px;
+      right: 6px;
+      bottom: 10px;
+      background: rgba(61, 196, 255, 0.14);
+      animation: driftReverse 9s ease-in-out infinite;
+    }
+
+    .companion-stage .companion-halo {
+      position: absolute;
+      inset: 14px;
+      border-radius: 24px;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.02), rgba(116,219,255,0.08), rgba(255,187,92,0.04), rgba(255,255,255,0.02));
+      mix-blend-mode: screen;
+      opacity: 0.8;
+      animation: companionSweep 7.5s linear infinite;
+      pointer-events: none;
+    }
+
+    .companion-room-grid {
+      position: absolute;
+      inset: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .companion-room-card {
+      position: relative;
+      border-radius: 18px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 78px;
+      opacity: 0.55;
+      transform: scale(0.96);
+      transition: transform 240ms ease, opacity 240ms ease, border-color 240ms ease, background 240ms ease;
+    }
+
+    .companion-room-card.is-complete {
+      opacity: 0.78;
+    }
+
+    .companion-room-card.is-active {
+      opacity: 1;
+      transform: scale(1);
+      border-color: rgba(255, 207, 120, 0.28);
+      background: linear-gradient(180deg, rgba(255, 194, 109, 0.14), rgba(255,255,255,0.06));
+    }
+
+    .companion-room-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .companion-room-state {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .companion-particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .companion-particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.85), rgba(255,209,102,0.18) 58%, rgba(255,255,255,0));
+      box-shadow: 0 0 18px rgba(255, 196, 94, 0.26);
+      opacity: 0.75;
+      animation: companionParticleRise 8.2s linear infinite;
+    }
+
+    .companion-particle:nth-child(1) { left: 16%; bottom: 8%; animation-delay: 0s; animation-duration: 7.2s; }
+    .companion-particle:nth-child(2) { left: 28%; bottom: 18%; animation-delay: 1.2s; animation-duration: 9.4s; }
+    .companion-particle:nth-child(3) { left: 40%; bottom: 10%; animation-delay: 0.8s; animation-duration: 8.6s; }
+    .companion-particle:nth-child(4) { left: 62%; bottom: 12%; animation-delay: 2s; animation-duration: 7.8s; }
+    .companion-particle:nth-child(5) { left: 76%; bottom: 16%; animation-delay: 0.4s; animation-duration: 9.8s; }
+    .companion-particle:nth-child(6) { left: 86%; bottom: 9%; animation-delay: 1.6s; animation-duration: 8.4s; }
+
+    .companion-avatar {
+      --companion-scale: 1;
+      --companion-tilt: 0deg;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 164px;
+      height: 164px;
+      transform-style: preserve-3d;
+      transform: translate3d(calc(-50% + var(--companion-room-x)), calc(-50% + var(--companion-room-y)), 0) perspective(900px) rotateX(16deg) rotateY(var(--companion-tilt)) scale(var(--companion-scale));
+      transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 2;
+    }
+
+    .companion-avatar.is-speaking {
+      --companion-scale: 1.04;
+    }
+
+    .companion-orb {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 28%, rgba(255,255,255,0.92), rgba(255,255,255,0.16) 14%, transparent 28%),
+        radial-gradient(circle at 50% 55%, rgba(255, 183, 86, 0.88), rgba(255, 120, 72, 0.68) 35%, rgba(51, 108, 120, 0.72) 82%);
+      box-shadow:
+        inset -18px -24px 40px rgba(0,0,0,0.22),
+        inset 12px 18px 24px rgba(255,255,255,0.14),
+        0 24px 40px rgba(0,0,0,0.22);
+      animation: companionFloat 5.6s ease-in-out infinite;
+    }
+
+    .companion-orb::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.18);
+      transform: translateZ(20px);
+    }
+
+    .companion-ring,
+    .companion-ring.secondary {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 205, 137, 0.24);
+      animation: orbitSpin 14s linear infinite;
+    }
+
+    .companion-ring.secondary {
+      inset: -24px;
+      border-color: rgba(113, 209, 255, 0.18);
+      animation-duration: 18s;
+      animation-direction: reverse;
+    }
+
+    .companion-face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    .companion-eyes {
+      position: absolute;
+      top: 58px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 34px;
+    }
+
+    .companion-eye {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #062433;
+      box-shadow: 0 0 0 5px rgba(255,255,255,0.12);
+      animation: blink 5.5s infinite;
+      transform-origin: center;
+    }
+
+    .companion-mouth {
+      position: absolute;
+      top: 102px;
+      left: 50%;
+      width: 42px;
+      height: 18px;
+      transform: translateX(-50%);
+      border-radius: 0 0 999px 999px;
+      border: 3px solid rgba(6, 36, 51, 0.92);
+      border-top: 0;
+      transition: all 180ms ease;
+    }
+
+    .companion-avatar[data-mood="celebrating"] .companion-mouth,
+    .companion-avatar[data-mood="hyped"] .companion-mouth,
+    .companion-avatar[data-mood="excited"] .companion-mouth,
+    .companion-avatar[data-mood="proud"] .companion-mouth {
+      width: 54px;
+      height: 24px;
+    }
+
+    .companion-avatar[data-mood="serious"] .companion-mouth,
+    .companion-avatar[data-mood="focused"] .companion-mouth {
+      width: 34px;
+      height: 8px;
+      border-radius: 999px;
+      border-top: 3px solid rgba(6, 36, 51, 0.92);
+      border-bottom: 0;
+    }
+
+    .companion-avatar.is-speaking .companion-mouth {
+      animation: talkPulse 0.46s ease-in-out infinite;
+    }
+
+    .companion-floor {
+      position: absolute;
+      left: 50%;
+      bottom: 28px;
+      width: 160px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 184, 84, 0.32), rgba(13, 23, 32, 0));
+      filter: blur(8px);
+      transform: translateX(calc(-50% + var(--companion-room-x)));
+      transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      animation: floorPulse 4s ease-in-out infinite;
+    }
+
+    .companion-voice-meter {
+      position: absolute;
+      left: 50%;
+      bottom: 42px;
+      transform: translateX(calc(-50% + var(--companion-room-x)));
+      transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 3;
+    }
+
+    .companion-headline {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .companion-headline h3 {
+      margin: 0 0 4px;
+    }
+
+    .companion-headline p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .companion-bubble {
+      border-radius: 20px;
+      padding: 16px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      min-height: 88px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .companion-bubble strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gold);
+    }
+
+    .companion-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .companion-meta {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .companion-meta-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .companion-meta-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .companion-actions {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .companion-actions input {
+      min-width: 0;
+      width: 100%;
+      margin: 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    .companion-quick {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .companion-chip {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .companion-status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .companion-guide-strip {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025)),
+        radial-gradient(circle at top left, rgba(255,190,92,0.12), transparent 34%);
+    }
+
+    .companion-guide-kicker {
+      min-width: 58px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 192, 102, 0.12);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .companion-guide-copy strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .companion-guide-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .companion-lab {
+      display: grid;
+      gap: 12px;
+    }
+
+    .companion-lab-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .companion-lab-head h4,
+    .companion-intelligence h4 {
+      margin: 0 0 4px;
+    }
+
+    .companion-lab-head p,
+    .companion-intelligence p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .companion-lens-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .companion-lens-card {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+      cursor: pointer;
+      transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+      text-align: left;
+    }
+
+    .companion-lens-card.is-active {
+      transform: translateY(-2px);
+      border-color: rgba(255, 207, 120, 0.34);
+      background: linear-gradient(180deg, rgba(255, 194, 109, 0.13), rgba(255,255,255,0.04));
+    }
+
+    .companion-lens-kicker {
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .companion-lens-title {
+      color: var(--text);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .companion-lens-body {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .companion-intelligence {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+        radial-gradient(circle at top right, rgba(113, 209, 255, 0.12), transparent 28%);
+    }
+
+    .companion-intelligence-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .companion-intelligence-card {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .companion-intelligence-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .companion-intelligence-value {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .companion-status-row .mini-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .companion-recommendation {
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .companion-reasons {
+      display: grid;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .companion-reasons .bullet {
+      min-height: 0;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.035);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .companion-actions .button {
+      min-height: 52px;
+      width: auto;
+      white-space: nowrap;
+    }
+
+    .companion-dock {
+      position: sticky;
+      bottom: calc(82px + env(safe-area-inset-bottom));
+      z-index: 12;
+      margin: 10px 0 8px;
+      padding: 0 4px;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .companion-dock-card {
+      width: min(100%, 390px);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(13, 21, 28, 0.96), rgba(17, 17, 17, 0.96));
+      border: 1px solid rgba(255, 209, 102, 0.12);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(16px);
+      pointer-events: auto;
+    }
+
+    .companion-dock-avatar {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.14) 18%, transparent 30%),
+        radial-gradient(circle at 50% 52%, rgba(255, 184, 84, 0.92), rgba(255, 130, 72, 0.68) 38%, rgba(38, 98, 116, 0.82) 86%);
+      box-shadow:
+        inset -8px -10px 18px rgba(0,0,0,0.18),
+        inset 5px 8px 12px rgba(255,255,255,0.12),
+        0 10px 24px rgba(0,0,0,0.25);
+      transform: perspective(500px) rotateX(12deg) rotateY(var(--dock-tilt, 0deg));
+      transition: transform 180ms ease;
+      overflow: hidden;
+    }
+
+    .companion-dock-avatar::after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(113, 209, 255, 0.18);
+      animation: orbitSpin 9s linear infinite;
+    }
+
+    .companion-dock-copy {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .companion-dock-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .companion-dock-body {
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .companion-dock-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .companion-dock-button {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .companion-voice-meter {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 18px;
+      margin-left: 0;
+    }
+
+    .companion-voice-bar {
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--gold), rgba(113, 209, 255, 0.8));
+      opacity: 0.35;
+      transform-origin: bottom;
+      transform: scaleY(0.35);
+    }
+
+    .companion-avatar.is-speaking + .companion-voice-meter .companion-voice-bar,
+    .companion-voice-meter.is-speaking .companion-voice-bar {
+      opacity: 1;
+      animation: companionVoiceBounce 0.72s ease-in-out infinite;
+    }
+
+    .companion-voice-meter.is-speaking .companion-voice-bar:nth-child(2) { animation-delay: 0.08s; }
+    .companion-voice-meter.is-speaking .companion-voice-bar:nth-child(3) { animation-delay: 0.16s; }
+    .companion-voice-meter.is-speaking .companion-voice-bar:nth-child(4) { animation-delay: 0.24s; }
+
+    @keyframes companionFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes companionPresenceFloat {
+      0%, 100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+      25% { transform: translateY(-8px) rotateX(6deg) rotateY(-8deg); }
+      50% { transform: translateY(-12px) rotateX(0deg) rotateY(8deg); }
+      75% { transform: translateY(-6px) rotateX(-4deg) rotateY(-6deg); }
+    }
+
+    @keyframes companionPresencePulse {
+      0%, 100% { transform: scale(0.96); opacity: 0.72; }
+      50% { transform: scale(1.04); opacity: 1; }
+    }
+
+    @keyframes companionSweep {
+      0% { transform: translateX(-18%) rotate(0deg); opacity: 0.32; }
+      50% { transform: translateX(18%) rotate(6deg); opacity: 0.9; }
+      100% { transform: translateX(-18%) rotate(0deg); opacity: 0.32; }
+    }
+
+    @keyframes companionParticleRise {
+      0% { transform: translate3d(0, 18px, 0) scale(0.7); opacity: 0; }
+      20% { opacity: 0.82; }
+      50% { transform: translate3d(12px, -70px, 0) scale(1); opacity: 0.7; }
+      100% { transform: translate3d(-10px, -150px, 0) scale(0.5); opacity: 0; }
+    }
+
+    @keyframes orbitSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes blink {
+      0%, 44%, 48%, 100% { transform: scaleY(1); }
+      46% { transform: scaleY(0.08); }
+    }
+
+    @keyframes talkPulse {
+      0%, 100% { transform: translateX(-50%) scaleY(1); }
+      50% { transform: translateX(-50%) scaleY(1.35); }
+    }
+
+    @keyframes floorPulse {
+      0%, 100% { transform: scale(0.95); opacity: 0.6; }
+      50% { transform: scale(1.06); opacity: 0.92; }
+    }
+
+    @keyframes companionVoiceBounce {
+      0%, 100% { transform: scaleY(0.35); }
+      50% { transform: scaleY(1); }
+    }
   </style>
 </head>
 <body>
@@ -1422,16 +2695,34 @@
     <section class="screen welcome-screen app-only active" data-screen="welcome">
       <div class="welcome-frame">
         <div class="welcome-hero">
-          <div class="welcome-mark">C</div>
+          <div class="welcome-mark">A</div>
           <div class="screen-head">
             <p class="overline" data-i18n="welcome.kicker"></p>
             <h1 class="welcome-title" data-i18n="welcome.title"></h1>
             <p class="welcome-subline" data-i18n="welcome.subline"></p>
           </div>
+          <div class="entry-companion" data-entry-companion>
+            <div class="entry-companion-head">
+              <div class="entry-companion-avatar" aria-hidden="true"></div>
+              <div class="entry-companion-copy">
+                <div class="entry-companion-kicker" data-entry-companion-kicker></div>
+                <div class="entry-companion-title" data-entry-companion-title></div>
+                <div class="entry-companion-body" data-entry-companion-body></div>
+              </div>
+            </div>
+            <div class="entry-companion-status">
+              <span class="mini-pill" data-entry-companion-pill-1></span>
+              <span class="mini-pill" data-entry-companion-pill-2></span>
+            </div>
+            <div class="entry-companion-actions">
+              <button class="button button-secondary" type="button" data-entry-companion-action="primary"></button>
+              <button class="button button-ghost" type="button" data-entry-companion-action="secondary"></button>
+            </div>
+          </div>
         </div>
         <div class="welcome-actions">
           <button class="button button-primary" type="button" data-action="go-screen" data-target-screen="explain" data-i18n="common.continue"></button>
-          <button class="skip-button" type="button" data-action="go-screen" data-target-screen="auth" data-i18n="common.skip"></button>
+          <button class="skip-button" type="button" data-action="go-screen" data-target-screen="app" data-i18n="common.skip"></button>
         </div>
       </div>
     </section>
@@ -1441,6 +2732,24 @@
         <div class="screen-head">
           <p class="overline" data-i18n="explain.kicker"></p>
           <h2 data-i18n="explain.title"></h2>
+        </div>
+        <div class="entry-companion" data-entry-companion>
+          <div class="entry-companion-head">
+            <div class="entry-companion-avatar" aria-hidden="true"></div>
+            <div class="entry-companion-copy">
+              <div class="entry-companion-kicker" data-entry-companion-kicker></div>
+              <div class="entry-companion-title" data-entry-companion-title></div>
+              <div class="entry-companion-body" data-entry-companion-body></div>
+            </div>
+          </div>
+          <div class="entry-companion-status">
+            <span class="mini-pill" data-entry-companion-pill-1></span>
+            <span class="mini-pill" data-entry-companion-pill-2></span>
+          </div>
+          <div class="entry-companion-actions">
+            <button class="button button-secondary" type="button" data-entry-companion-action="primary"></button>
+            <button class="button button-ghost" type="button" data-entry-companion-action="secondary"></button>
+          </div>
         </div>
         <div class="step-list">
           <article class="step-card">
@@ -1467,7 +2776,7 @@
         </div>
         <p class="explain-tagline" data-i18n="explain.tagline"></p>
         <div class="stack-actions">
-          <button class="button button-primary" type="button" data-action="go-screen" data-target-screen="auth" data-i18n="common.continue"></button>
+          <button class="button button-primary" type="button" data-action="go-screen" data-target-screen="app" data-i18n="common.continue"></button>
           <button class="button button-ghost" type="button" data-action="go-screen" data-target-screen="welcome" data-i18n="common.back"></button>
         </div>
       </div>
@@ -1479,6 +2788,24 @@
           <p class="overline" data-i18n="auth.kicker"></p>
           <h2 data-i18n="auth.title"></h2>
           <p data-i18n="auth.subline"></p>
+        </div>
+        <div class="entry-companion" data-entry-companion>
+          <div class="entry-companion-head">
+            <div class="entry-companion-avatar" aria-hidden="true"></div>
+            <div class="entry-companion-copy">
+              <div class="entry-companion-kicker" data-entry-companion-kicker></div>
+              <div class="entry-companion-title" data-entry-companion-title></div>
+              <div class="entry-companion-body" data-entry-companion-body></div>
+            </div>
+          </div>
+          <div class="entry-companion-status">
+            <span class="mini-pill" data-entry-companion-pill-1></span>
+            <span class="mini-pill" data-entry-companion-pill-2></span>
+          </div>
+          <div class="entry-companion-actions">
+            <button class="button button-secondary" type="button" data-entry-companion-action="primary"></button>
+            <button class="button button-ghost" type="button" data-entry-companion-action="secondary"></button>
+          </div>
         </div>
         <div class="auth-toggle" role="tablist" aria-label="Authentifizierung">
           <button class="active" type="button" data-auth-mode="login" data-i18n="auth.tabs.login"></button>
@@ -1493,6 +2820,7 @@
         <div class="fields" id="authFields"></div>
         <div class="auth-actions">
           <button class="button button-primary" type="button" id="authSubmit" data-i18n="auth.actions.login"></button>
+          <button class="button button-secondary" type="button" id="authBiometricButton" style="display:none;"></button>
           <button class="button button-secondary" type="button" data-action="go-screen" data-target-screen="explain" data-i18n="common.back"></button>
         </div>
         <p class="auth-note" id="authStatusNote" data-i18n="auth.note"></p>
@@ -1515,6 +2843,26 @@
               <span class="mini-pill" id="tabBannerPill1" data-i18n="app.banner.pills.1"></span>
               <span class="mini-pill" id="tabBannerPill2" data-i18n="app.banner.pills.2"></span>
               <span class="mini-pill" id="tabBannerPill3" data-i18n="app.banner.pills.3"></span>
+            </div>
+          </div>
+          <div class="companion-rail" id="companionRail">
+            <div class="companion-rail-head">
+              <div class="companion-rail-avatar" aria-hidden="true"></div>
+              <div class="companion-rail-copy">
+                <div class="companion-rail-kicker" id="companionRailKicker"></div>
+                <div class="companion-rail-title" id="companionRailTitle"></div>
+                <div class="companion-rail-body" id="companionRailBody"></div>
+              </div>
+            </div>
+            <div class="companion-rail-meta">
+              <span class="mini-pill" id="companionRailRoom"></span>
+              <span class="mini-pill" id="companionRailMode"></span>
+              <span class="mini-pill" id="companionRailAction"></span>
+            </div>
+            <div class="companion-rail-path" id="companionRailPath" aria-hidden="true"></div>
+            <div class="companion-rail-actions">
+              <button class="button button-primary" type="button" id="companionRailPrimary"></button>
+              <button class="button button-ghost" type="button" id="companionRailSecondary"></button>
             </div>
           </div>
         </div>
@@ -1570,6 +2918,7 @@
             <p id="meetingFlowBody"></p>
             <div class="stack-actions" style="margin-top: 12px;">
               <button class="button button-primary" type="button" id="meetingFlowCta"></button>
+              <button class="button button-secondary" type="button" id="meetingArCta" style="display:none;"></button>
             </div>
             <div class="flow-sequence" id="meetingFlowSequence"></div>
             <div class="meeting-route-card" id="meetingRouteCard">
@@ -1645,176 +2994,202 @@
             </div>
           </article>
           <article class="app-card">
-            <h3 data-i18n="app.profile.processing.title"></h3>
-            <p data-i18n="app.profile.processing.body"></p>
-            <div class="metric-grid">
-              <div class="metric">
-                <div class="metric-label" data-i18n="app.profile.metrics.mode.label"></div>
-                <strong id="profileModeValue"></strong>
+            <div class="profile-overview-card">
+              <div class="profile-section-heading">
+                <h3 data-i18n="app.profile.processing.title"></h3>
+                <p class="profile-compact-copy" data-i18n="app.profile.processing.body"></p>
               </div>
-              <div class="metric">
-                <div class="metric-label" data-i18n="app.profile.metrics.result.label"></div>
-                <strong id="profileResultValue"></strong>
-              </div>
-            </div>
-            <div class="matching-status">
-              <div class="pill-row">
-                <span class="mini-pill" id="profileMatchingEligibilityChip"></span>
-                <span class="mini-pill" id="profileMatchingRadarChip"></span>
-                <span class="mini-pill" id="profileMatchingLocationChip"></span>
-                <span class="mini-pill" id="profileMatchingSyncChip"></span>
-                <span class="mini-pill" id="profileMatchingCandidatesChip"></span>
-              </div>
-              <h4 data-i18n="app.profile.matching.title"></h4>
-              <p id="profileMatchingSummary"></p>
-              <p id="profileMatchingReasons"></p>
-            </div>
-          </article>
-          <article class="app-card">
-            <div class="trust-panel">
-              <div>
-                <h3 data-i18n="app.profile.trust.title"></h3>
-                <p data-i18n="app.profile.trust.body"></p>
-              </div>
-              <div class="trust-levels">
-                <div class="trust-level">
-                  <div class="trust-level-copy">
-                    <div class="trust-level-title" data-i18n="app.profile.trust.level.basic.title"></div>
-                    <div class="trust-level-body" id="profileTrustBasicBody"></div>
-                  </div>
-                  <span class="mini-pill" id="profileTrustBasicChip"></span>
+              <div class="profile-summary-grid">
+                <div class="profile-summary-card">
+                  <div class="profile-summary-label" data-i18n="app.profile.metrics.mode.label"></div>
+                  <div class="profile-summary-value" id="profileModeValue"></div>
                 </div>
-                <div class="trust-level">
-                  <div class="trust-level-copy">
-                    <div class="trust-level-title" data-i18n="app.profile.trust.level.verified.title"></div>
-                    <div class="trust-level-body" id="profileTrustVerifiedBody"></div>
-                  </div>
-                  <span class="mini-pill" id="profileTrustVerifiedChip"></span>
-                </div>
-                <div class="trust-level">
-                  <div class="trust-level-copy">
-                    <div class="trust-level-title" data-i18n="app.profile.trust.level.extended.title"></div>
-                    <div class="trust-level-body" id="profileTrustExtendedBody"></div>
-                  </div>
-                  <span class="mini-pill" id="profileTrustExtendedChip"></span>
+                <div class="profile-summary-card">
+                  <div class="profile-summary-label" data-i18n="app.profile.metrics.result.label"></div>
+                  <div class="profile-summary-value" id="profileResultValue"></div>
                 </div>
               </div>
-              <div class="trust-signal-list">
-                <div class="trust-signal">
-                  <div>
-                    <div class="trust-signal-label" data-i18n="app.profile.trust.signal.photo.label"></div>
-                    <p class="trust-signal-note" id="profileTrustPhotoNote"></p>
-                  </div>
-                  <span class="mini-pill" id="profileTrustPhotoChip"></span>
+              <div class="matching-status" style="margin-top: 0;">
+                <div class="pill-row">
+                  <span class="mini-pill" id="profileMatchingEligibilityChip"></span>
+                  <span class="mini-pill" id="profileMatchingRadarChip"></span>
+                  <span class="mini-pill" id="profileMatchingLocationChip"></span>
                 </div>
-                <div class="trust-signal">
-                  <div>
-                    <div class="trust-signal-label" data-i18n="app.profile.trust.signal.face.label"></div>
-                    <p class="trust-signal-note" id="profileTrustFaceNote"></p>
-                  </div>
-                  <span class="mini-pill" id="profileTrustFaceChip"></span>
-                </div>
-                <div class="trust-signal">
-                  <div>
-                    <div class="trust-signal-label" data-i18n="app.profile.trust.signal.phone.label"></div>
-                    <p class="trust-signal-note" id="profileTrustPhoneNote"></p>
-                  </div>
-                  <span class="mini-pill" id="profileTrustPhoneChip"></span>
-                </div>
-                <div class="trust-signal">
-                  <div>
-                    <div class="trust-signal-label" data-i18n="app.profile.trust.signal.social.label"></div>
-                    <p class="trust-signal-note" id="profileTrustSocialNote"></p>
-                  </div>
-                  <span class="mini-pill" id="profileTrustSocialChip"></span>
-                </div>
-              </div>
-              <div class="trust-upload-flow">
-                <div>
-                  <h4 data-i18n="app.profile.photo.title"></h4>
-                  <p class="trust-phone-status" id="profilePhotoStatus"></p>
-                </div>
-                <div class="field">
-                  <label for="profilePhotoInput" data-i18n="app.profile.photo.input.label"></label>
-                  <input id="profilePhotoInput" type="file" accept="image/jpeg,image/png,image/webp">
-                </div>
-                <div class="stack-actions" style="margin-top: 0;">
-                  <button class="button button-secondary" type="button" id="profilePhotoUploadButton" data-i18n="app.profile.photo.upload"></button>
-                  <button class="button button-ghost" type="button" id="profilePhotoDeleteButton" data-i18n="app.profile.photo.delete"></button>
-                </div>
-              </div>
-              <div class="trust-phone-flow" id="profilePhoneFlow">
-                <div>
-                  <h4 data-i18n="app.profile.phone.title"></h4>
-                  <p class="trust-phone-status" id="profilePhoneStatus"></p>
-                  <p class="trust-phone-preview" id="profilePhonePreview"></p>
-                </div>
-                <div class="field">
-                  <label for="profilePhoneInput" data-i18n="app.profile.phone.input.label"></label>
-                  <input id="profilePhoneInput" type="tel" data-i18n-placeholder="app.profile.phone.input.placeholder">
-                </div>
-                <div class="field" id="profilePhoneCodeField">
-                  <label for="profilePhoneCodeInput" data-i18n="app.profile.phone.code.label"></label>
-                  <input id="profilePhoneCodeInput" type="text" inputmode="numeric" data-i18n-placeholder="app.profile.phone.code.placeholder">
-                </div>
-                <div class="stack-actions" style="margin-top: 0;">
-                  <button class="button button-secondary" type="button" id="profilePhoneRequestButton" data-i18n="app.profile.phone.request"></button>
-                  <button class="button button-primary" type="button" id="profilePhoneVerifyButton" data-i18n="app.profile.phone.verify"></button>
-                </div>
-              </div>
-              <div class="safety-note">
-                <h4 data-i18n="app.profile.safety.title"></h4>
-                <p data-i18n="app.profile.safety.body"></p>
-                <div class="stack-actions" style="margin-top: 4px;">
-                  <button class="button button-secondary" type="button" id="profileSafetyAlarmButton" data-i18n="app.profile.safety.alarm.button"></button>
-                  <button class="button button-ghost" type="button" id="profileSafetyAlarmCancelButton" data-i18n="app.profile.safety.alarm.cancel"></button>
-                </div>
-                <p class="trust-phone-status" id="profileSafetyAlarmStatus"></p>
-              </div>
-              <div class="safety-note">
-                <h4 data-i18n="app.profile.safety.circle.title"></h4>
-                <p data-i18n="app.profile.safety.circle.body"></p>
-                <div class="bullet-list">
-                  <div class="bullet">
-                    <div class="bullet-mark">1</div>
-                    <div data-i18n="app.profile.safety.circle.point.contacts"></div>
-                  </div>
-                  <div class="bullet">
-                    <div class="bullet-mark">2</div>
-                    <div data-i18n="app.profile.safety.circle.point.context"></div>
-                  </div>
-                  <div class="bullet">
-                    <div class="bullet-mark">3</div>
-                    <div data-i18n="app.profile.safety.circle.point.escalation"></div>
-                  </div>
-                </div>
-                <div class="trust-upload-flow" style="margin-top: 4px;">
-                  <p class="trust-phone-status" id="profileSafetyCircleStatus"></p>
-                  <div class="field">
-                    <label for="profileSafetyContactName" data-i18n="app.profile.safety.circle.input.name"></label>
-                    <input id="profileSafetyContactName" type="text" data-i18n-placeholder="app.profile.safety.circle.input.name.placeholder">
-                  </div>
-                  <div class="field">
-                    <label for="profileSafetyContactRelation" data-i18n="app.profile.safety.circle.input.relation"></label>
-                    <input id="profileSafetyContactRelation" type="text" data-i18n-placeholder="app.profile.safety.circle.input.relation.placeholder">
-                  </div>
-                  <div class="field">
-                    <label for="profileSafetyContactPhone" data-i18n="app.profile.safety.circle.input.phone"></label>
-                    <input id="profileSafetyContactPhone" type="tel" data-i18n-placeholder="app.profile.safety.circle.input.phone.placeholder">
-                  </div>
-                  <label style="display:flex; align-items:center; gap:10px; color:var(--muted); font-size:14px;">
-                    <input id="profileSafetyContactPrimary" type="checkbox">
-                    <span data-i18n="app.profile.safety.circle.input.primary"></span>
-                  </label>
-                  <div class="stack-actions" style="margin-top: 0;">
-                    <button class="button button-secondary" type="button" id="profileSafetyContactSaveButton" data-i18n="app.profile.safety.circle.save"></button>
-                    <button class="button button-ghost" type="button" id="profileSafetyContactCancelButton" data-i18n="app.profile.safety.circle.cancel"></button>
-                  </div>
-                  <div class="bullet-list" id="profileSafetyCircleList"></div>
+                <p id="profileMatchingSummary"></p>
+                <p id="profileMatchingReasons"></p>
+                <div class="pill-row">
+                  <span class="mini-pill" id="profileMatchingSyncChip"></span>
+                  <span class="mini-pill" id="profileMatchingCandidatesChip"></span>
                 </div>
               </div>
             </div>
           </article>
+          <div class="profile-section-grid">
+            <article class="app-card">
+              <div class="trust-panel">
+                <div class="profile-section-heading">
+                  <h3 data-i18n="app.profile.trust.title"></h3>
+                  <p class="profile-compact-copy">Hier steht nur der sichtbare Vertrauensstatus. Kurz, klar und ohne dass Safety oder Verwaltung dazwischenfunkt.</p>
+                </div>
+                <div class="trust-levels">
+                  <div class="trust-level">
+                    <div class="trust-level-copy">
+                      <div class="trust-level-title" data-i18n="app.profile.trust.level.basic.title"></div>
+                      <div class="trust-level-body" id="profileTrustBasicBody"></div>
+                    </div>
+                    <span class="mini-pill" id="profileTrustBasicChip"></span>
+                  </div>
+                  <div class="trust-level">
+                    <div class="trust-level-copy">
+                      <div class="trust-level-title" data-i18n="app.profile.trust.level.verified.title"></div>
+                      <div class="trust-level-body" id="profileTrustVerifiedBody"></div>
+                    </div>
+                    <span class="mini-pill" id="profileTrustVerifiedChip"></span>
+                  </div>
+                  <div class="trust-level">
+                    <div class="trust-level-copy">
+                      <div class="trust-level-title" data-i18n="app.profile.trust.level.extended.title"></div>
+                      <div class="trust-level-body" id="profileTrustExtendedBody"></div>
+                    </div>
+                    <span class="mini-pill" id="profileTrustExtendedChip"></span>
+                  </div>
+                </div>
+                <div class="trust-signal-list">
+                  <div class="trust-signal">
+                    <div>
+                      <div class="trust-signal-label" data-i18n="app.profile.trust.signal.photo.label"></div>
+                      <p class="trust-signal-note" id="profileTrustPhotoNote"></p>
+                    </div>
+                    <span class="mini-pill" id="profileTrustPhotoChip"></span>
+                  </div>
+                  <div class="trust-signal">
+                    <div>
+                      <div class="trust-signal-label" data-i18n="app.profile.trust.signal.face.label"></div>
+                      <p class="trust-signal-note" id="profileTrustFaceNote"></p>
+                    </div>
+                    <span class="mini-pill" id="profileTrustFaceChip"></span>
+                  </div>
+                  <div class="trust-signal">
+                    <div>
+                      <div class="trust-signal-label" data-i18n="app.profile.trust.signal.phone.label"></div>
+                      <p class="trust-signal-note" id="profileTrustPhoneNote"></p>
+                    </div>
+                    <span class="mini-pill" id="profileTrustPhoneChip"></span>
+                  </div>
+                  <div class="trust-signal">
+                    <div>
+                      <div class="trust-signal-label" data-i18n="app.profile.trust.signal.social.label"></div>
+                      <p class="trust-signal-note" id="profileTrustSocialNote"></p>
+                    </div>
+                    <span class="mini-pill" id="profileTrustSocialChip"></span>
+                  </div>
+                </div>
+              </div>
+            </article>
+            <article class="app-card">
+              <div class="profile-compact-stack">
+                <div class="profile-section-heading">
+                  <h3>Verifizierung</h3>
+                  <p class="profile-compact-copy">Profilbild und Telefonnummer erweitern den Vertrauensstatus, bleiben aber klar getrennt von der Gesichtsverifizierung.</p>
+                </div>
+                <div class="profile-actions-grid">
+                  <div class="trust-upload-flow">
+                    <div>
+                      <h4 data-i18n="app.profile.photo.title"></h4>
+                      <p class="trust-phone-status" id="profilePhotoStatus"></p>
+                    </div>
+                    <div class="field">
+                      <label for="profilePhotoInput" data-i18n="app.profile.photo.input.label"></label>
+                      <input id="profilePhotoInput" type="file" accept="image/jpeg,image/png,image/webp">
+                    </div>
+                    <div class="stack-actions" style="margin-top: 0;">
+                      <button class="button button-secondary" type="button" id="profilePhotoUploadButton" data-i18n="app.profile.photo.upload"></button>
+                      <button class="button button-ghost" type="button" id="profilePhotoDeleteButton" data-i18n="app.profile.photo.delete"></button>
+                    </div>
+                  </div>
+                  <div class="trust-phone-flow" id="profilePhoneFlow">
+                    <div>
+                      <h4 data-i18n="app.profile.phone.title"></h4>
+                      <p class="trust-phone-status" id="profilePhoneStatus"></p>
+                      <p class="trust-phone-preview" id="profilePhonePreview"></p>
+                    </div>
+                    <div class="field">
+                      <label for="profilePhoneInput" data-i18n="app.profile.phone.input.label"></label>
+                      <input id="profilePhoneInput" type="tel" data-i18n-placeholder="app.profile.phone.input.placeholder">
+                    </div>
+                    <div class="field" id="profilePhoneCodeField">
+                      <label for="profilePhoneCodeInput" data-i18n="app.profile.phone.code.label"></label>
+                      <input id="profilePhoneCodeInput" type="text" inputmode="numeric" data-i18n-placeholder="app.profile.phone.code.placeholder">
+                    </div>
+                    <div class="stack-actions" style="margin-top: 0;">
+                      <button class="button button-secondary" type="button" id="profilePhoneRequestButton" data-i18n="app.profile.phone.request"></button>
+                      <button class="button button-primary" type="button" id="profilePhoneVerifyButton" data-i18n="app.profile.phone.verify"></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+            <article class="app-card">
+              <div class="profile-safety-shell">
+                <div class="profile-section-heading">
+                  <h3 data-i18n="app.profile.safety.title"></h3>
+                  <p class="profile-compact-copy">Safety bleibt erreichbar, nimmt aber nicht mehr den halben Profil-Screen ein.</p>
+                </div>
+                <div class="safety-note">
+                  <p data-i18n="app.profile.safety.body"></p>
+                  <div class="stack-actions" style="margin-top: 4px;">
+                    <button class="button button-secondary" type="button" id="profileSafetyAlarmButton" data-i18n="app.profile.safety.alarm.button"></button>
+                    <button class="button button-ghost" type="button" id="profileSafetyAlarmCancelButton" data-i18n="app.profile.safety.alarm.cancel"></button>
+                  </div>
+                  <p class="trust-phone-status" id="profileSafetyAlarmStatus"></p>
+                </div>
+                <details class="profile-collapsible">
+                  <summary>Safety Circle verwalten</summary>
+                  <div class="profile-collapsible-body">
+                    <p class="profile-compact-copy" data-i18n="app.profile.safety.circle.body"></p>
+                    <div class="bullet-list" style="margin-top: 0;">
+                      <div class="bullet">
+                        <div class="bullet-mark">1</div>
+                        <div data-i18n="app.profile.safety.circle.point.contacts"></div>
+                      </div>
+                      <div class="bullet">
+                        <div class="bullet-mark">2</div>
+                        <div data-i18n="app.profile.safety.circle.point.context"></div>
+                      </div>
+                      <div class="bullet">
+                        <div class="bullet-mark">3</div>
+                        <div data-i18n="app.profile.safety.circle.point.escalation"></div>
+                      </div>
+                    </div>
+                    <div class="trust-upload-flow" style="margin-top: 0;">
+                      <p class="trust-phone-status" id="profileSafetyCircleStatus"></p>
+                      <div class="field">
+                        <label for="profileSafetyContactName" data-i18n="app.profile.safety.circle.input.name"></label>
+                        <input id="profileSafetyContactName" type="text" data-i18n-placeholder="app.profile.safety.circle.input.name.placeholder">
+                      </div>
+                      <div class="field">
+                        <label for="profileSafetyContactRelation" data-i18n="app.profile.safety.circle.input.relation"></label>
+                        <input id="profileSafetyContactRelation" type="text" data-i18n-placeholder="app.profile.safety.circle.input.relation.placeholder">
+                      </div>
+                      <div class="field">
+                        <label for="profileSafetyContactPhone" data-i18n="app.profile.safety.circle.input.phone"></label>
+                        <input id="profileSafetyContactPhone" type="tel" data-i18n-placeholder="app.profile.safety.circle.input.phone.placeholder">
+                      </div>
+                      <label style="display:flex; align-items:center; gap:10px; color:var(--muted); font-size:14px;">
+                        <input id="profileSafetyContactPrimary" type="checkbox">
+                        <span data-i18n="app.profile.safety.circle.input.primary"></span>
+                      </label>
+                      <div class="stack-actions" style="margin-top: 0;">
+                        <button class="button button-secondary" type="button" id="profileSafetyContactSaveButton" data-i18n="app.profile.safety.circle.save"></button>
+                        <button class="button button-ghost" type="button" id="profileSafetyContactCancelButton" data-i18n="app.profile.safety.circle.cancel"></button>
+                      </div>
+                      <div class="bullet-list" id="profileSafetyCircleList"></div>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </article>
+          </div>
         </section>
 
         <section class="tab-content" data-tab-content="more">
@@ -1839,24 +3214,122 @@
               </div>
             </article>
             <article class="app-card">
-              <h3 data-i18n="app.more.buddy.title"></h3>
-              <p data-i18n="app.more.buddy.body"></p>
-              <div class="metric-grid">
-                <div class="metric">
-                  <div class="metric-label" data-i18n="app.more.buddy.metrics.xp.label"></div>
-                  <strong data-i18n="app.more.buddy.metrics.xp.value"></strong>
+              <div class="companion-shell">
+                <div class="companion-headline">
+                  <div>
+                    <p class="section-label" data-i18n="app.more.companion.kicker"></p>
+                    <h3 data-i18n="app.more.companion.title"></h3>
+                    <p data-i18n="app.more.companion.body"></p>
+                  </div>
+                  <span class="mini-pill" id="companionLiveChip"></span>
                 </div>
-                <div class="metric">
-                  <div class="metric-label" data-i18n="app.more.buddy.metrics.level.label"></div>
-                  <strong data-i18n="app.more.buddy.metrics.level.value"></strong>
+                <div class="companion-stage" id="companionStage">
+                  <div class="companion-room-grid" id="companionRoomGrid" aria-hidden="true"></div>
+                  <div class="companion-halo"></div>
+                  <div class="companion-particles" aria-hidden="true">
+                    <span class="companion-particle"></span>
+                    <span class="companion-particle"></span>
+                    <span class="companion-particle"></span>
+                    <span class="companion-particle"></span>
+                    <span class="companion-particle"></span>
+                    <span class="companion-particle"></span>
+                  </div>
+                  <div class="companion-floor"></div>
+                  <div class="companion-avatar" id="companionAvatar" data-mood="calm">
+                    <div class="companion-ring"></div>
+                    <div class="companion-ring secondary"></div>
+                    <div class="companion-orb"></div>
+                    <div class="companion-face">
+                      <div class="companion-eyes">
+                        <div class="companion-eye"></div>
+                        <div class="companion-eye"></div>
+                      </div>
+                      <div class="companion-mouth"></div>
+                    </div>
+                  </div>
+                  <div class="companion-voice-meter" id="companionVoiceMeter" aria-hidden="true">
+                    <span class="companion-voice-bar"></span>
+                    <span class="companion-voice-bar"></span>
+                    <span class="companion-voice-bar"></span>
+                    <span class="companion-voice-bar"></span>
+                  </div>
                 </div>
-                <div class="metric">
-                  <div class="metric-label" data-i18n="app.more.buddy.metrics.mood.label"></div>
-                  <strong data-i18n="app.more.buddy.metrics.mood.value"></strong>
+                <div class="companion-status-row">
+                  <span class="mini-pill" id="companionMoodChip"></span>
+                  <span class="mini-pill" id="companionModeChip"></span>
+                  <span class="mini-pill" id="companionContextChip"></span>
+                  <span class="mini-pill" id="companionRoomChip"></span>
                 </div>
-                <div class="metric">
-                  <div class="metric-label" data-i18n="app.more.buddy.metrics.talk.label"></div>
-                  <strong data-i18n="app.more.buddy.metrics.talk.value"></strong>
+                <div class="companion-guide-strip">
+                  <div class="companion-guide-kicker" id="companionGuideKicker"></div>
+                  <div class="companion-guide-copy">
+                    <strong id="companionGuideTitle"></strong>
+                    <p id="companionGuideBody"></p>
+                  </div>
+                </div>
+                <div class="companion-lab">
+                  <div class="companion-lab-head">
+                    <div>
+                      <h4 data-i18n="app.more.companion.lab.title"></h4>
+                      <p data-i18n="app.more.companion.lab.body"></p>
+                    </div>
+                    <span class="mini-pill" id="companionLensChip"></span>
+                  </div>
+                  <div class="companion-lens-grid" id="companionLensGrid"></div>
+                </div>
+                <div class="companion-bubble">
+                  <strong id="companionBubbleTitle"></strong>
+                  <div id="companionBubbleBody"></div>
+                  <div class="companion-recommendation" id="companionRecommendation"></div>
+                </div>
+                <div class="companion-reasons" id="companionReasons"></div>
+                <div class="companion-intelligence">
+                  <div>
+                    <h4 data-i18n="app.more.companion.intelligence.title"></h4>
+                    <p data-i18n="app.more.companion.intelligence.body"></p>
+                  </div>
+                  <div class="companion-intelligence-grid">
+                    <div class="companion-intelligence-card">
+                      <div class="companion-intelligence-label" data-i18n="app.more.companion.intelligence.focus"></div>
+                      <div class="companion-intelligence-value" id="companionFocusValue"></div>
+                    </div>
+                    <div class="companion-intelligence-card">
+                      <div class="companion-intelligence-label" data-i18n="app.more.companion.intelligence.warning"></div>
+                      <div class="companion-intelligence-value" id="companionWarningValue"></div>
+                    </div>
+                    <div class="companion-intelligence-card">
+                      <div class="companion-intelligence-label" data-i18n="app.more.companion.intelligence.move"></div>
+                      <div class="companion-intelligence-value" id="companionMoveValue"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="companion-meta-grid">
+                  <div class="companion-meta">
+                    <div class="companion-meta-label" data-i18n="app.more.companion.metrics.level.label"></div>
+                    <div class="companion-meta-value" id="companionLevelValue"></div>
+                  </div>
+                  <div class="companion-meta">
+                    <div class="companion-meta-label" data-i18n="app.more.companion.metrics.xp.label"></div>
+                    <div class="companion-meta-value" id="companionXpValue"></div>
+                  </div>
+                  <div class="companion-meta">
+                    <div class="companion-meta-label" data-i18n="app.more.companion.metrics.action.label"></div>
+                    <div class="companion-meta-value" id="companionActionValue"></div>
+                  </div>
+                  <div class="companion-meta">
+                    <div class="companion-meta-label" data-i18n="app.more.companion.metrics.voice.label"></div>
+                    <div class="companion-meta-value" id="companionVoiceValue"></div>
+                  </div>
+                </div>
+                <div class="companion-quick">
+                  <button class="companion-chip" type="button" data-companion-prompt-key="app.more.companion.prompts.next" data-i18n="app.more.companion.prompts.next"></button>
+                  <button class="companion-chip" type="button" data-companion-prompt-key="app.more.companion.prompts.energy" data-i18n="app.more.companion.prompts.energy"></button>
+                  <button class="companion-chip" type="button" data-companion-prompt-key="app.more.companion.prompts.safety" data-i18n="app.more.companion.prompts.safety"></button>
+                </div>
+                <div class="companion-actions">
+                  <input id="companionInput" type="text" data-i18n-placeholder="app.more.companion.input.placeholder">
+                  <button class="button button-secondary" type="button" id="companionSpeakButton" data-i18n="app.more.companion.actions.speak"></button>
+                  <button class="button button-primary" type="button" id="companionSendButton" data-i18n="app.more.companion.actions.send"></button>
                 </div>
               </div>
             </article>
@@ -1875,6 +3348,13 @@
               </div>
               <div class="stack-actions" style="margin-top: 14px;">
                 <button class="button button-secondary" type="button" data-i18n="app.more.lookalike.actions.open"></button>
+              </div>
+            </article>
+            <article class="app-card">
+              <h3 data-i18n="app.more.account.title"></h3>
+              <p data-i18n="app.more.account.body"></p>
+              <div class="stack-actions" style="margin-top: 14px;">
+                <button class="button button-secondary" type="button" id="logoutButton" data-i18n="app.more.account.logout"></button>
               </div>
             </article>
           </div>
@@ -1898,6 +3378,19 @@
             </div>
           </div>
         </section>
+      </div>
+
+      <div class="companion-dock app-only" id="companionDock">
+        <div class="companion-dock-card">
+          <div class="companion-dock-avatar" id="companionDockAvatar"></div>
+          <div class="companion-dock-copy">
+            <div class="companion-dock-title" id="companionDockTitle"></div>
+            <div class="companion-dock-body" id="companionDockBody"></div>
+          </div>
+          <div class="companion-dock-actions">
+            <button class="companion-dock-button" type="button" id="companionDockOpen" data-i18n="app.more.companion.actions.open"></button>
+          </div>
+        </div>
       </div>
 
       <nav class="bottom-nav" aria-label="App Navigation">
@@ -1983,6 +3476,28 @@
         <div class="footer-note" data-i18n="debug.footer"></div>
       </div>
     </section>
+
+    <div class="companion-presence-layer app-only" id="companionPresenceLayer" aria-hidden="true">
+      <div class="companion-presence" id="companionPresence" data-bubble-side="left">
+        <div class="companion-presence-core">
+          <div class="companion-presence-glow"></div>
+          <div class="companion-presence-ring"></div>
+          <div class="companion-presence-ring secondary"></div>
+          <div class="companion-presence-ring tertiary"></div>
+          <div class="companion-presence-orb"></div>
+          <div class="companion-presence-shadow"></div>
+        </div>
+        <div class="companion-presence-bubble">
+          <div class="companion-presence-kicker" id="companionPresenceKicker"></div>
+          <div class="companion-presence-title" id="companionPresenceTitle"></div>
+          <div class="companion-presence-body" id="companionPresenceBody"></div>
+          <div class="companion-presence-pills">
+            <span class="mini-pill" id="companionPresencePill1"></span>
+            <span class="mini-pill" id="companionPresencePill2"></span>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script>
@@ -1993,11 +3508,24 @@
         "common.back": "Zurück",
 
         "welcome.kicker": "Willkommen",
-        "welcome.title": "Willkommen bei Catch Your Partner",
+        "welcome.title": "Willkommen bei Aroundly",
         "welcome.subline": "Keine Swipes. Echte Begegnungen.",
+        "entry.companion.kicker": "Aroundly ist da",
+        "entry.companion.welcome.title": "Ich bin schon beim ersten Screen aktiv",
+        "entry.companion.welcome.body": "Nicht spaeter als Zusatz, sondern jetzt schon als Guide. Ich ziehe dich vom ersten Moment in einen lebendigen Flow.",
+        "entry.companion.welcome.pill1": "Live Presence",
+        "entry.companion.welcome.pill2": "Guide ab Start",
+        "entry.companion.welcome.primary": "Mit mir weiter",
+        "entry.companion.welcome.secondary": "App direkt oeffnen",
 
         "explain.kicker": "So läuft es",
         "explain.title": "Kurz, klar, aufregend.",
+        "entry.companion.explain.title": "Ich erklaere nicht nur, ich fuehre",
+        "entry.companion.explain.body": "Ab hier lese ich Radar, Timing, Treffpunkt und Safety als aktiven Layer. Die App soll sich schon hier dynamisch anfuehlen.",
+        "entry.companion.explain.pill1": "Radar lesen",
+        "entry.companion.explain.pill2": "Meet Flow",
+        "entry.companion.explain.primary": "Zur Anmeldung",
+        "entry.companion.explain.secondary": "Zurueck",
         "explain.steps.radar.icon": "100m",
         "explain.steps.radar.title": "Radar an",
         "explain.steps.radar.body": "Du öffnest dein Radar nur dann, wenn du wirklich Lust auf eine spontane Begegnung in deiner Nähe hast.",
@@ -2012,15 +3540,46 @@
         "auth.kicker": "Anmelden",
         "auth.title": "Erst kurz rein. Dann beginnt die App.",
         "auth.subline": "Erst anmelden, dann öffnen sich Radar, Treffen und dein Vertrauensprofil. So bleibt der Einstieg fokussiert und ruhig.",
+        "entry.companion.auth.login.title": "Ich halte den Login knapp und lebendig",
+        "entry.companion.auth.login.body": "Session, Biometrie, Vertrauen und danach direkt Produktfluss. Ich bleibe schon hier sichtbar statt erst spaeter unten anzudocken.",
+        "entry.companion.auth.login.pill1": "Login Flow",
+        "entry.companion.auth.login.pill2": "Trust kommt gleich",
+        "entry.companion.auth.login.primary": "Jetzt einloggen",
+        "entry.companion.auth.login.secondary": "Warum Aroundly anders ist",
+        "entry.companion.auth.register.title": "Ich baue dein Profil mit Charakter auf",
+        "entry.companion.auth.register.body": "Beim Registrieren foerdere ich Name, Interessen und spaeter Trust in einen Einstieg, der sich gefuehrt und dynamisch anfuellt.",
+        "entry.companion.auth.register.pill1": "Onboarding live",
+        "entry.companion.auth.register.pill2": "Companion von Anfang an",
+        "entry.companion.auth.register.primary": "Account bauen",
+        "entry.companion.auth.register.secondary": "Zum Login zurueck",
         "auth.tabs.login": "Anmelden",
         "auth.tabs.register": "Registrieren",
         "auth.benefits.safety": "Sicherheit",
         "auth.benefits.face": "Face ID",
         "auth.benefits.premium": "Lookalike (Premium)",
-        "auth.benefits.buddy": "Coach Buddy",
+        "auth.benefits.buddy": "AI Companion",
         "auth.actions.login": "Einloggen",
         "auth.actions.register": "Account erstellen",
         "auth.note": "Nur ein sauberer Einstieg. Keine technischen Details, keine Ablenkung.",
+        "auth.actions.face_id": "Mit Face ID weiter",
+        "auth.actions.touch_id": "Mit Touch ID weiter",
+        "auth.actions.biometric": "Sicher weiter",
+        "auth.note.biometric": "Auf diesem iPhone liegt eine geschuetzte Session bereit. Du kannst dich sicher per Biometrie wieder oeffnen.",
+        "auth.status.loading": "Verbindung wird gerade gesichert. Einen kurzen Moment.",
+        "auth.status.restoring": "Deine Session wird gerade wiederhergestellt.",
+        "auth.status.biometric.loading": "Sichere Anmeldung wird gerade geprueft.",
+        "auth.status.biometric.failed": "Die biometrische Anmeldung konnte gerade nicht bestaetigt werden.",
+        "auth.status.biometric.unavailable": "Auf diesem Geraet ist aktuell keine nutzbare Biometrie verfuegbar.",
+        "auth.status.biometric.cancelled": "Die biometrische Anmeldung wurde abgebrochen.",
+        "auth.status.biometric.missing": "Es liegt noch keine geschuetzte Session fuer Face ID oder Touch ID vor.",
+        "auth.status.invalid_email": "Bitte gib eine gueltige E-Mail-Adresse ein.",
+        "auth.status.password_short": "Bitte nutze ein Passwort mit mindestens 8 Zeichen.",
+        "auth.status.name_missing": "Bitte gib deinen Vornamen ein.",
+        "auth.status.login_invalid": "E-Mail oder Passwort stimmen nicht.",
+        "auth.status.register_conflict": "Diese E-Mail ist bereits registriert.",
+        "auth.status.server": "Der Einstieg ist gerade nicht stabil genug. Bitte versuche es gleich noch einmal.",
+        "auth.status.logged_out": "Du bist jetzt sauber abgemeldet.",
+        "auth.status.register_scan": "Dein Account ist bereit. Als Nächstes startet direkt dein Face-Scan.",
 
         "auth.login.email.label": "E-Mail",
         "auth.login.email.placeholder": "du@example.com",
@@ -2068,7 +3627,7 @@
         "app.banner.more.title": "Zusatzbereiche ruhig gesammelt",
         "app.banner.more.body": "Hier bleibt alles bewusst nachgeordnet, ohne Radar, Treffen und Vertrauen zu überlagern.",
         "app.banner.more.status": "Zusatzbereich",
-        "app.banner.more.primary": "Buddy ansehen",
+        "app.banner.more.primary": "Companion erleben",
         "app.banner.more.secondary": "Radar öffnen",
         "app.banner.more.pill1": "Verfügbar",
         "app.banner.more.pill2": "Demnächst",
@@ -2158,6 +3717,8 @@
         "app.meeting.flow.arrived.ok_both_title": "Beide haben bestaetigt",
         "app.meeting.flow.arrived.ok_both_body": "Beide OKs sind serverseitig im gemeinsamen Meeting gespeichert. Der Chat kann darauf aufbauen.",
         "app.meeting.flow.arrived.ok_both_cta": "Zum Chat",
+        "app.meeting.flow.ar_cta": "AR Guide öffnen",
+        "app.meeting.flow.ar_cta_loading": "AR Guide startet",
         "app.meeting.chat.title": "Chat",
         "app.meeting.chat.kicker": "Freigeschaltet",
         "app.meeting.chat.locked": "Der Chat bleibt gesperrt, bis das gemeinsame Meeting serverseitig freigegeben ist.",
@@ -2442,19 +4003,133 @@
         "app.more.today.kicker": "Produkt heute",
         "app.more.today.title": "Verfuegbar",
         "app.more.today.subtitle": "Diese Bereiche sind bewusst Zusatz. Der Kern der App bleibt Begegnung, Treffpunkt und Vertrauen.",
-        "app.more.today.buddy": "Coach Buddy begleitet den Moment ruhig im Hintergrund und bleibt klar hinter Radar und Treffen.",
+        "app.more.today.buddy": "Der Aroundly Companion reagiert dynamisch auf Radar, Treffpunkt, Safety und Timing, ohne den Kernflow zu ueberlagern.",
+        "app.more.companion.kicker": "Alive Layer",
+        "app.more.companion.title": "Aroundly Companion",
+        "app.more.companion.body": "Ein dynamischer 3D-Companion, der auf deinen echten App-Kontext reagiert, dir den naechsten Schritt sagt und per Stimme mit dir spricht.",
+        "app.more.companion.metrics.level.label": "Level",
+        "app.more.companion.metrics.xp.label": "Momentum",
+        "app.more.companion.metrics.action.label": "Naechster Move",
+        "app.more.companion.metrics.voice.label": "Voice",
+        "app.more.companion.actions.send": "Fragen",
+        "app.more.companion.actions.speak": "Sprechen",
+        "app.more.companion.actions.open": "Companion",
+        "app.more.companion.input.placeholder": "Frag Aroundly nach deinem naechsten Move",
+        "app.more.companion.prompts.next": "Was ist mein naechster Schritt?",
+        "app.more.companion.prompts.energy": "Gib mir Energie",
+        "app.more.companion.prompts.safety": "Mach einen Safety Check",
+        "app.more.companion.lab.title": "Love OS Modi",
+        "app.more.companion.lab.body": "Jeder Modus schaut auf eine andere Ebene von Chemie, Bindung, Risiko oder Date-Design.",
+        "app.more.companion.intelligence.title": "Intelligence Board",
+        "app.more.companion.intelligence.body": "Aroundly liest nicht nur Stimmung, sondern Muster, Timing, Safety und romantische Dynamik.",
+        "app.more.companion.intelligence.focus": "Hauptfokus",
+        "app.more.companion.intelligence.warning": "Worauf ich achte",
+        "app.more.companion.intelligence.move": "Was ich draus mache",
+        "app.more.companion.lens.chemistry": "Chemistry",
+        "app.more.companion.lens.chemistry.kicker": "Attraction",
+        "app.more.companion.lens.chemistry.body": "Liest Spannung, Timing und gegenseitige Energie ohne sich in Fantasie zu verlieren.",
+        "app.more.companion.lens.attachment": "Attachment Lens",
+        "app.more.companion.lens.attachment.kicker": "Pattern",
+        "app.more.companion.lens.attachment.body": "Erkennt Naehe-Distanz-Muster, Unsicherheit und Bindungsdruck hinter dem Flirt.",
+        "app.more.companion.lens.repair": "Repair Coach",
+        "app.more.companion.lens.repair.kicker": "Repair",
+        "app.more.companion.lens.repair.body": "Hilft bei Missverstaendnissen, Nachjustierung und respektvoller Klarheit.",
+        "app.more.companion.lens.astro": "Astro Mirror",
+        "app.more.companion.lens.astro.kicker": "Symbolic",
+        "app.more.companion.lens.astro.body": "Nutze Sternzeichen als Spiegel fuer Dynamik, nicht als Urteil ueber Schicksal.",
+        "app.more.companion.lens.architect": "Date Architect",
+        "app.more.companion.lens.architect.kicker": "Design",
+        "app.more.companion.lens.architect.body": "Baut den besten naechsten Date-Move aus Ort, Vibe, Sicherheit und Conversion.",
+        "app.more.companion.lens.radar": "Red Flag Radar",
+        "app.more.companion.lens.radar.kicker": "Safety",
+        "app.more.companion.lens.radar.body": "Scant fuer gemischte Signale, Druck, Unstimmigkeit und riskante Dynamiken.",
+        "app.more.companion.focus.chemistry": "Spannung, Timing und echte Gegenseitigkeit",
+        "app.more.companion.focus.attachment": "Bindungsmuster und emotionale Regulation",
+        "app.more.companion.focus.repair": "Missverstaendnisse und Wiedergutmachung",
+        "app.more.companion.focus.astro": "Symbolische Dynamik und archetypische Sprache",
+        "app.more.companion.focus.architect": "Das naechste starke Date-Setup",
+        "app.more.companion.focus.radar": "Red Flags, Consent und Safety",
+        "app.more.companion.warning.chemistry": "Verwechsle Intensitaet nicht mit Verlaesslichkeit.",
+        "app.more.companion.warning.attachment": "Rueckzug oder Klammern kann ein Muster sein, kein Mysterium.",
+        "app.more.companion.warning.repair": "Defensive Sprache zerstoert oft mehr als das eigentliche Problem.",
+        "app.more.companion.warning.astro": "Astro darf Muster spiegeln, aber keine roten Flaggen ueberschreiben.",
+        "app.more.companion.warning.architect": "Zu viel Planung kann Spannung toeten, zu wenig Sicherheit auch.",
+        "app.more.companion.warning.radar": "Druck, Inkonsistenz und Grenzverschiebung sind ernst zu nehmen.",
+        "app.more.companion.move.chemistry": "Ich komprimiere Flirt in einen klaren naechsten Schritt.",
+        "app.more.companion.move.attachment": "Ich uebersetze Unsicherheit in ein lesbares Muster.",
+        "app.more.companion.move.repair": "Ich forme Spannung in ehrliche, saubere Sprache um.",
+        "app.more.companion.move.astro": "Ich gebe deinem Moment eine poetische, aber geerdete Spiegelung.",
+        "app.more.companion.move.architect": "Ich designe aus Kontext einen Date-Move mit echter Conversion.",
+        "app.more.companion.move.radar": "Ich ziehe die Handbremse, wenn etwas off wirkt.",
+        "app.more.companion.live.backend": "Live Companion",
+        "app.more.companion.live.local": "Smart Fallback",
+        "app.more.companion.voice.on": "Stimme aktiv",
+        "app.more.companion.voice.off": "Text only",
+        "app.more.companion.bubble.idle.title": "Aroundly ist wach",
+        "app.more.companion.bubble.idle.body": "Ich beobachte gerade dein Momentum und warte auf den besten naechsten Impuls.",
+        "app.more.companion.bubble.loading.title": "Aroundly scannt deinen Flow",
+        "app.more.companion.bubble.loading.body": "Ich sammle Radar-, Meeting- und Trust-Signale und bringe sie in einen klaren naechsten Schritt.",
+        "app.more.companion.context.starting": "Startphase",
+        "app.more.companion.context.match_phase": "Match bereit",
+        "app.more.companion.context.meeting_phase": "Meeting vorbereitet",
+        "app.more.companion.context.route_phase": "Route aktiv",
+        "app.more.companion.context.arrival_phase": "Ankunftsphase",
+        "app.more.companion.context.after_meeting": "Afterglow",
+        "app.more.companion.mode.coach": "Coach",
+        "app.more.companion.mode.motivation": "Hype",
+        "app.more.companion.mode.safety": "Safety",
+        "app.more.companion.mode.reflection": "Reflection",
+        "app.more.companion.rooms.profil": "Trust-Raum",
+        "app.more.companion.rooms.radar": "Radar-Raum",
+        "app.more.companion.rooms.treffen": "Treff-Raum",
+        "app.more.companion.rooms.more": "Live-Core",
+        "app.more.companion.room.active": "Aktiver Raum",
+        "app.more.companion.room.locked": "In Queue",
+        "app.more.companion.room.ready": "Im Flow",
+        "app.more.companion.guide.kicker": "Guide",
+        "app.more.companion.guide.profil.title": "Erst Vertrauen, dann Tempo",
+        "app.more.companion.guide.profil.pending": "Ich warte im Trust-Raum, bis Scan, Telefon und Verifikation stabil genug fuer echtes Momentum geworden sind.",
+        "app.more.companion.guide.profil.ready": "Dein Trust-Layer ist wach. Von hier aus kann ich dich viel klarer in Radar und spaeter in ein echtes Treffen fuehren.",
+        "app.more.companion.guide.radar.title": "Sichtbarkeit bewusst einsetzen",
+        "app.more.companion.guide.radar.idle": "Ich bin zuerst in den Radar-Raum gewechselt. Dieser Raum ist dein Leitfaden fuer den Anfang: sichtbar nur dann, wenn du wirklich offen fuer echte Begegnung bist.",
+        "app.more.companion.guide.radar.active": "Radar ist live. Ich halte diesen Raum mit dir und suche den kuerzesten Weg von Signal zu echtem Treffpunkt.",
+        "app.more.companion.guide.treffen.title": "Momentum in Bewegung kippen",
+        "app.more.companion.guide.treffen.idle": "Dieser Raum bleibt ruhig, bis ein Treffpunkt wirklich bereit ist. Ich fuehre hier Timing, Route und Safety statt noch mehr Chat-Rauschen.",
+        "app.more.companion.guide.treffen.active": "Der Treff-Raum ist offen. Ich bleibe dicht an Route, Ankunft und oeffentlichem Ort, damit sich die App real und nicht kuenstlich anfuehlt.",
+        "app.more.companion.guide.more.title": "Companion-Core passt sich an",
+        "app.more.companion.guide.more.body": "Hier siehst du die Live-Ebene, aber die eigentliche Abgrenzung entsteht dadurch, dass ich mich mit dir durch das Produkt bewege statt als statisches Widget stehenzubleiben.",
+        "app.companion.rail.kicker": "Live Guide",
+        "app.companion.rail.radar.title": "Ich fuehre den ersten echten Schritt",
+        "app.companion.rail.radar.body": "Radar ist kein Feed. Ich halte dich bewusst kurz sichtbar und schiebe dich nur dann weiter, wenn aus Signal wirklich Begegnung werden kann.",
+        "app.companion.rail.treffen.title": "Ich halte Timing, Route und Ort zusammen",
+        "app.companion.rail.treffen.body": "Im Treffen-Raum werde ich navigatorisch: weniger Text, mehr echte Bewegung, oeffentlicher Ort und saubere Ankunftslogik.",
+        "app.companion.rail.profil.title": "Ich baue zuerst deinen Trust-Motor",
+        "app.companion.rail.profil.body": "Hier treibe ich Scan, Telefon und Vertrauenssignale nach vorne, damit die App spaeter nicht wie jede andere Dating-App kippt.",
+        "app.companion.rail.more.title": "Hier liegt mein Live-Kern offen",
+        "app.companion.rail.more.body": "Das ist nicht nur ein Assistent. Ich bewege mich durch Produkt-Raeume, passe Sprache und Haltung an und bleibe eng an echten Situationen.",
+        "app.companion.rail.primary.radar.start": "Radar aktivieren",
+        "app.companion.rail.primary.radar.more": "Companion oeffnen",
+        "app.companion.rail.primary.treffen.go": "Zum Treffpunkt",
+        "app.companion.rail.primary.profil.go": "Trust staerken",
+        "app.companion.rail.primary.more.go": "Live Companion",
+        "app.companion.rail.secondary.energy": "Energie",
+        "app.companion.rail.secondary.safety": "Safety",
+        "app.companion.rail.secondary.next": "Naechster Move",
         "app.more.today.premium": "Premium buendelt erweiterte Extras, ohne den Kern der App groesser zu machen als noetig.",
         "app.more.today.lookalike": "Lookalike ist ein zusaetzliches Premium-Feature zum Entdecken, nicht das zentrale Versprechen.",
-        "app.more.buddy.title": "Coach Buddy",
-        "app.more.buddy.body": "Buddy bleibt als ruhiger Zusatz da: kleine Impulse, etwas Motivation und Hilfe für den Ton vor dem Treffen.",
+        "app.more.buddy.title": "Aroundly Companion",
+        "app.more.buddy.body": "Buddy bleibt als ruhiger Zusatz da: Companion-Oberflaeche vorne, App-Kontext in der Mitte und spaeter ein kontrolliert angebundenes LLM-Gehirn dahinter.",
+        "app.more.buddy.context": "Buddy bereitet echten App-Kontext vor: Match, Treffpunkt, Route, Ankunft, Safety, Verifizierung und Fortschritt.",
+        "app.more.buddy.modes": "Antwortmodi sind sauber getrennt: Coach, Motivation, Safety und Reflexion.",
+        "app.more.buddy.safety": "Heute noch kontrolliert und begrenzt: Safety hat Vorrang, freie ungebremste KI wird nicht als fertig behauptet.",
         "app.more.buddy.metrics.xp.label": "XP",
         "app.more.buddy.metrics.xp.value": "480",
         "app.more.buddy.metrics.level.label": "Level",
         "app.more.buddy.metrics.level.value": "7",
         "app.more.buddy.metrics.mood.label": "Stimmung",
         "app.more.buddy.metrics.mood.value": "Ruhig",
-        "app.more.buddy.metrics.talk.label": "Gespräch",
-        "app.more.buddy.metrics.talk.value": "Locker starten",
+        "app.more.buddy.metrics.talk.label": "Modus",
+        "app.more.buddy.metrics.talk.value": "Guarded",
         "app.more.lookalike.title": "Lookalike",
         "app.more.lookalike.body": "Ein zusätzliches Premium-Feature zum spielerischen Entdecken visueller Ähnlichkeiten. Interessant, aber bewusst nicht im Zentrum.",
         "app.more.lookalike.metrics.quality.label": "Ähnlichkeit",
@@ -2462,6 +4137,9 @@
         "app.more.lookalike.metrics.access.label": "Zugang",
         "app.more.lookalike.metrics.access.value": "Premium",
         "app.more.lookalike.actions.open": "Lookalike ansehen",
+        "app.more.account.title": "Account",
+        "app.more.account.body": "Hier kannst du deine aktuelle Session sauber beenden. Gespeicherte Login-Daten auf diesem Geraet werden dabei kontrolliert entfernt.",
+        "app.more.account.logout": "Sicher abmelden",
         "app.more.upcoming.kicker": "Demnächst",
         "app.more.upcoming.title": "Bewusst spaeter",
         "app.more.upcoming.subtitle": "Diese Bereiche sind angekuendigt und klar nachgeordnet. Sie ergaenzen die App erst dann, wenn der Kern weiter steht.",
@@ -2495,11 +4173,24 @@
         "common.back": "Back",
 
         "welcome.kicker": "Welcome",
-        "welcome.title": "Welcome to Catch Your Partner",
+        "welcome.title": "Welcome to Aroundly",
         "welcome.subline": "No swipes. Real meetups.",
+        "entry.companion.kicker": "Aroundly is here",
+        "entry.companion.welcome.title": "I'm already active on the first screen",
+        "entry.companion.welcome.body": "Not later as an extra, but right now as your guide. I pull you into a living flow from the very first moment.",
+        "entry.companion.welcome.pill1": "Live presence",
+        "entry.companion.welcome.pill2": "Guide from start",
+        "entry.companion.welcome.primary": "Continue with me",
+        "entry.companion.welcome.secondary": "Open app now",
 
         "explain.kicker": "How it works",
         "explain.title": "Short, clear, exciting.",
+        "entry.companion.explain.title": "I don't just explain, I guide",
+        "entry.companion.explain.body": "From here I read radar, timing, meetup logic, and safety as an active layer. The app should already feel dynamic here.",
+        "entry.companion.explain.pill1": "Read radar",
+        "entry.companion.explain.pill2": "Meet flow",
+        "entry.companion.explain.primary": "Go to sign in",
+        "entry.companion.explain.secondary": "Back",
         "explain.steps.radar.icon": "100m",
         "explain.steps.radar.title": "Radar on",
         "explain.steps.radar.body": "You open radar only when you actually want a spontaneous meetup nearby.",
@@ -2514,15 +4205,46 @@
         "auth.kicker": "Sign in",
         "auth.title": "A quick step in. Then the app opens up.",
         "auth.subline": "After sign-in, radar, meeting flow and your trust profile open up. Before that, the entry stays focused and calm.",
+        "entry.companion.auth.login.title": "I keep login tight and alive",
+        "entry.companion.auth.login.body": "Session, biometrics, trust, then straight into product flow. I stay visible here instead of only docking later inside the app.",
+        "entry.companion.auth.login.pill1": "Login flow",
+        "entry.companion.auth.login.pill2": "Trust comes next",
+        "entry.companion.auth.login.primary": "Log in now",
+        "entry.companion.auth.login.secondary": "Why Aroundly is different",
+        "entry.companion.auth.register.title": "I build your profile with character",
+        "entry.companion.auth.register.body": "During registration I push name, interests, and later trust into an entry that feels guided and dynamic.",
+        "entry.companion.auth.register.pill1": "Live onboarding",
+        "entry.companion.auth.register.pill2": "Companion from the start",
+        "entry.companion.auth.register.primary": "Build account",
+        "entry.companion.auth.register.secondary": "Back to login",
         "auth.tabs.login": "Login",
         "auth.tabs.register": "Register",
         "auth.benefits.safety": "Safety",
         "auth.benefits.face": "Face ID",
         "auth.benefits.premium": "Lookalike (Premium)",
-        "auth.benefits.buddy": "Coach Buddy",
+        "auth.benefits.buddy": "AI Companion",
         "auth.actions.login": "Log in",
         "auth.actions.register": "Create account",
         "auth.note": "Just a clean entry. No technical noise, no distractions.",
+        "auth.actions.face_id": "Continue with Face ID",
+        "auth.actions.touch_id": "Continue with Touch ID",
+        "auth.actions.biometric": "Continue securely",
+        "auth.note.biometric": "A protected session is available on this iPhone. You can reopen securely with biometrics.",
+        "auth.status.loading": "Securing your connection right now. One short moment.",
+        "auth.status.restoring": "Your session is being restored.",
+        "auth.status.biometric.loading": "Secure sign-in is being checked.",
+        "auth.status.biometric.failed": "Biometric sign-in could not be confirmed right now.",
+        "auth.status.biometric.unavailable": "No usable biometrics are available on this device right now.",
+        "auth.status.biometric.cancelled": "Biometric sign-in was cancelled.",
+        "auth.status.biometric.missing": "There is no protected Face ID or Touch ID session available yet.",
+        "auth.status.invalid_email": "Please enter a valid email address.",
+        "auth.status.password_short": "Please use a password with at least 8 characters.",
+        "auth.status.name_missing": "Please enter your first name.",
+        "auth.status.login_invalid": "Email or password is incorrect.",
+        "auth.status.register_conflict": "This email is already registered.",
+        "auth.status.server": "The entry flow is not stable enough right now. Please try again in a moment.",
+        "auth.status.logged_out": "You have been signed out cleanly.",
+        "auth.status.register_scan": "Your account is ready. Next, your face scan starts directly.",
 
         "auth.login.email.label": "Email",
         "auth.login.email.placeholder": "you@example.com",
@@ -2570,7 +4292,7 @@
         "app.banner.more.title": "Extras kept in one place",
         "app.banner.more.body": "Everything here stays deliberately secondary without overpowering radar, meetups and trust.",
         "app.banner.more.status": "Extras",
-        "app.banner.more.primary": "View Buddy",
+        "app.banner.more.primary": "Meet Companion",
         "app.banner.more.secondary": "Open radar",
         "app.banner.more.pill1": "Available",
         "app.banner.more.pill2": "Coming soon",
@@ -2660,6 +4382,8 @@
         "app.meeting.flow.arrived.ok_both_title": "Both confirmed",
         "app.meeting.flow.arrived.ok_both_body": "Both OKs are now stored on the server in the shared meeting. Chat can build on that state.",
         "app.meeting.flow.arrived.ok_both_cta": "Open chat",
+        "app.meeting.flow.ar_cta": "Open AR guide",
+        "app.meeting.flow.ar_cta_loading": "Opening AR guide",
         "app.meeting.chat.title": "Chat",
         "app.meeting.chat.kicker": "Unlocked",
         "app.meeting.chat.locked": "Chat stays locked until the shared meeting is unlocked on the server.",
@@ -2939,19 +4663,133 @@
         "app.more.body": "These areas extend the product. Radar, meetup flow and verification stay at the center.",
         "app.more.today.kicker": "Product today",
         "app.more.today.title": "Add-ons, clearly secondary",
-        "app.more.today.buddy": "Coach Buddy supports the moment, but does not come before radar and the meetup flow.",
+        "app.more.today.buddy": "The Aroundly Companion reacts to radar, meetup, safety and timing without overpowering the core flow.",
+        "app.more.companion.kicker": "Alive Layer",
+        "app.more.companion.title": "Aroundly Companion",
+        "app.more.companion.body": "A dynamic 3D companion that reacts to your real app context, recommends the next move and speaks back to you.",
+        "app.more.companion.metrics.level.label": "Level",
+        "app.more.companion.metrics.xp.label": "Momentum",
+        "app.more.companion.metrics.action.label": "Next move",
+        "app.more.companion.metrics.voice.label": "Voice",
+        "app.more.companion.actions.send": "Ask",
+        "app.more.companion.actions.speak": "Speak",
+        "app.more.companion.actions.open": "Companion",
+        "app.more.companion.input.placeholder": "Ask Aroundly for your next move",
+        "app.more.companion.prompts.next": "What's my next step?",
+        "app.more.companion.prompts.energy": "Give me energy",
+        "app.more.companion.prompts.safety": "Run a safety check",
+        "app.more.companion.lab.title": "Love OS Modes",
+        "app.more.companion.lab.body": "Each mode looks at chemistry, attachment, risk, or date design through a different lens.",
+        "app.more.companion.intelligence.title": "Intelligence Board",
+        "app.more.companion.intelligence.body": "Aroundly reads more than mood. It reads pattern, timing, safety, and romantic dynamics.",
+        "app.more.companion.intelligence.focus": "Primary focus",
+        "app.more.companion.intelligence.warning": "What I watch",
+        "app.more.companion.intelligence.move": "What I do with it",
+        "app.more.companion.lens.chemistry": "Chemistry",
+        "app.more.companion.lens.chemistry.kicker": "Attraction",
+        "app.more.companion.lens.chemistry.body": "Reads tension, timing, and mutual energy without drifting into fantasy.",
+        "app.more.companion.lens.attachment": "Attachment Lens",
+        "app.more.companion.lens.attachment.kicker": "Pattern",
+        "app.more.companion.lens.attachment.body": "Detects closeness-distance patterns, insecurity, and attachment pressure behind the flirt.",
+        "app.more.companion.lens.repair": "Repair Coach",
+        "app.more.companion.lens.repair.kicker": "Repair",
+        "app.more.companion.lens.repair.body": "Helps with misunderstandings, recalibration, and respectful clarity.",
+        "app.more.companion.lens.astro": "Astro Mirror",
+        "app.more.companion.lens.astro.kicker": "Symbolic",
+        "app.more.companion.lens.astro.body": "Uses signs as a mirror for dynamics, not a verdict about fate.",
+        "app.more.companion.lens.architect": "Date Architect",
+        "app.more.companion.lens.architect.kicker": "Design",
+        "app.more.companion.lens.architect.body": "Builds the strongest next date move from place, vibe, safety, and conversion.",
+        "app.more.companion.lens.radar": "Red Flag Radar",
+        "app.more.companion.lens.radar.kicker": "Safety",
+        "app.more.companion.lens.radar.body": "Scans for mixed signals, pressure, inconsistency, and risky dynamics.",
+        "app.more.companion.focus.chemistry": "Tension, timing, and real reciprocity",
+        "app.more.companion.focus.attachment": "Attachment pattern and emotional regulation",
+        "app.more.companion.focus.repair": "Misunderstanding and repair",
+        "app.more.companion.focus.astro": "Symbolic dynamics and archetypal language",
+        "app.more.companion.focus.architect": "The strongest next date setup",
+        "app.more.companion.focus.radar": "Red flags, consent, and safety",
+        "app.more.companion.warning.chemistry": "Do not confuse intensity with reliability.",
+        "app.more.companion.warning.attachment": "Withdrawal or clinging can be a pattern, not a mystery.",
+        "app.more.companion.warning.repair": "Defensive language often damages more than the original issue.",
+        "app.more.companion.warning.astro": "Astro can reflect patterns but should never override red flags.",
+        "app.more.companion.warning.architect": "Too much planning can kill tension, too little safety can kill trust.",
+        "app.more.companion.warning.radar": "Pressure, inconsistency, and boundary drift deserve serious attention.",
+        "app.more.companion.move.chemistry": "I compress flirt into one clear next move.",
+        "app.more.companion.move.attachment": "I translate uncertainty into a readable pattern.",
+        "app.more.companion.move.repair": "I reshape tension into clean, honest language.",
+        "app.more.companion.move.astro": "I give your moment a poetic but grounded reflection.",
+        "app.more.companion.move.architect": "I design a date move with real conversion from your context.",
+        "app.more.companion.move.radar": "I pull the brake when something feels off.",
+        "app.more.companion.live.backend": "Live Companion",
+        "app.more.companion.live.local": "Smart fallback",
+        "app.more.companion.voice.on": "Voice on",
+        "app.more.companion.voice.off": "Text only",
+        "app.more.companion.bubble.idle.title": "Aroundly is awake",
+        "app.more.companion.bubble.idle.body": "I'm tracking your momentum and waiting for the cleanest next move.",
+        "app.more.companion.bubble.loading.title": "Aroundly is scanning your flow",
+        "app.more.companion.bubble.loading.body": "I'm reading radar, meetup and trust signals to turn them into a clear next action.",
+        "app.more.companion.context.starting": "Starting phase",
+        "app.more.companion.context.match_phase": "Match ready",
+        "app.more.companion.context.meeting_phase": "Meeting prepared",
+        "app.more.companion.context.route_phase": "Route active",
+        "app.more.companion.context.arrival_phase": "Arrival phase",
+        "app.more.companion.context.after_meeting": "Afterglow",
+        "app.more.companion.mode.coach": "Coach",
+        "app.more.companion.mode.motivation": "Hype",
+        "app.more.companion.mode.safety": "Safety",
+        "app.more.companion.mode.reflection": "Reflection",
+        "app.more.companion.rooms.profil": "Trust room",
+        "app.more.companion.rooms.radar": "Radar room",
+        "app.more.companion.rooms.treffen": "Meet room",
+        "app.more.companion.rooms.more": "Live core",
+        "app.more.companion.room.active": "Active room",
+        "app.more.companion.room.locked": "Queued",
+        "app.more.companion.room.ready": "In flow",
+        "app.more.companion.guide.kicker": "Guide",
+        "app.more.companion.guide.profil.title": "Build trust before speed",
+        "app.more.companion.guide.profil.pending": "I'm waiting in the trust room until scan, phone and verification become stable enough for real momentum.",
+        "app.more.companion.guide.profil.ready": "Your trust layer is awake. From here I can guide you into radar and later into a real meetup with much more confidence.",
+        "app.more.companion.guide.radar.title": "Use visibility with intent",
+        "app.more.companion.guide.radar.idle": "I moved into radar first. This room is your opening guide: switch visibility on only when you truly want a real encounter.",
+        "app.more.companion.guide.radar.active": "Radar is live. I'm holding this room with you and watching for the shortest path from signal to an actual meet spot.",
+        "app.more.companion.guide.treffen.title": "Turn momentum into movement",
+        "app.more.companion.guide.treffen.idle": "This room stays calm until a meet spot is truly ready. I guide timing, route and safety instead of creating more chat noise.",
+        "app.more.companion.guide.treffen.active": "The meetup room is open. I stay close to route, arrival and public-place logic so the app feels grounded in reality.",
+        "app.more.companion.guide.more.title": "Companion core is adaptive",
+        "app.more.companion.guide.more.body": "Here you see the live brain layer, but the real distinction happens because I keep moving with you through the product instead of staying in one static widget.",
+        "app.companion.rail.kicker": "Live Guide",
+        "app.companion.rail.radar.title": "I lead the first real move",
+        "app.companion.rail.radar.body": "Radar is not a feed. I keep you intentionally visible for a short moment and only push forward when a signal can become a real encounter.",
+        "app.companion.rail.treffen.title": "I keep timing, route and place aligned",
+        "app.companion.rail.treffen.body": "Inside the meetup room I become navigational: less text, more movement, public place logic and a clean arrival flow.",
+        "app.companion.rail.profil.title": "I build your trust engine first",
+        "app.companion.rail.profil.body": "Here I push scan, phone and trust signals forward so the app doesn't collapse into looking like every other dating app later.",
+        "app.companion.rail.more.title": "My live core is exposed here",
+        "app.companion.rail.more.body": "This is not just an assistant. I move through product rooms, adapt language and stance, and stay close to real situations.",
+        "app.companion.rail.primary.radar.start": "Activate radar",
+        "app.companion.rail.primary.radar.more": "Open Companion",
+        "app.companion.rail.primary.treffen.go": "Go to meetup",
+        "app.companion.rail.primary.profil.go": "Strengthen trust",
+        "app.companion.rail.primary.more.go": "Live Companion",
+        "app.companion.rail.secondary.energy": "Energy",
+        "app.companion.rail.secondary.safety": "Safety",
+        "app.companion.rail.secondary.next": "Next move",
         "app.more.today.premium": "Premium bundles extended extras without overpowering the app core.",
         "app.more.today.lookalike": "Lookalike is an explore feature for later discovery, not the main promise.",
-        "app.more.buddy.title": "Coach Buddy",
-        "app.more.buddy.body": "Buddy stays as a calm extra: a few prompts, some motivation and support for your tone before the meetup.",
+        "app.more.buddy.title": "Aroundly Companion",
+        "app.more.buddy.body": "Buddy stays as a calm extra: companion surface up front, app context in the middle and a later controlled LLM brain behind it.",
+        "app.more.buddy.context": "Buddy is prepared to react to real app context: match, meetup, route, arrival, safety, verification and progress.",
+        "app.more.buddy.modes": "Reply modes are kept separate: coach, motivation, safety and reflection.",
+        "app.more.buddy.safety": "Still controlled and limited today: safety stays first, no unbounded live AI is claimed as finished.",
         "app.more.buddy.metrics.xp.label": "XP",
         "app.more.buddy.metrics.xp.value": "480",
         "app.more.buddy.metrics.level.label": "Level",
         "app.more.buddy.metrics.level.value": "7",
         "app.more.buddy.metrics.mood.label": "Mood",
         "app.more.buddy.metrics.mood.value": "Calm",
-        "app.more.buddy.metrics.talk.label": "Talk",
-        "app.more.buddy.metrics.talk.value": "Easy start",
+        "app.more.buddy.metrics.talk.label": "Mode",
+        "app.more.buddy.metrics.talk.value": "Guarded",
         "app.more.lookalike.title": "Lookalike",
         "app.more.lookalike.body": "An extra premium feature for playful visual similarity discovery. Interesting, but intentionally not central.",
         "app.more.lookalike.metrics.quality.label": "Similarity",
@@ -2959,6 +4797,9 @@
         "app.more.lookalike.metrics.access.label": "Access",
         "app.more.lookalike.metrics.access.value": "Premium",
         "app.more.lookalike.actions.open": "View Lookalike",
+        "app.more.account.title": "Account",
+        "app.more.account.body": "End your current session cleanly here. Stored login data on this device will be removed in a controlled way.",
+        "app.more.account.logout": "Sign out securely",
         "app.more.upcoming.kicker": "Coming soon",
         "app.future.mind.title": "Mind",
         "app.future.mind.body": "More context for energy, pace and mood. Intentionally held back until the core feels even sharper.",
@@ -3068,6 +4909,21 @@
           input.id = `auth-${mode}-${fieldDef.name}`;
           input.type = fieldDef.type;
           input.placeholder = t(fieldDef.placeholder);
+          input.autocomplete =
+            fieldDef.name === "email"
+              ? "email"
+              : fieldDef.name === "password"
+                ? (mode === "login" ? "current-password" : "new-password")
+                : fieldDef.name === "name"
+                  ? "given-name"
+                  : "off";
+          input.autocapitalize = fieldDef.type === "email" || fieldDef.name === "password" ? "off" : "words";
+          input.spellcheck = false;
+          input.addEventListener("keydown", (event) => {
+            if (event.key !== "Enter") return;
+            event.preventDefault();
+            submitAuth();
+          });
           field.appendChild(input);
         }
 
@@ -3078,10 +4934,13 @@
     }
 
     function activateScreen(name) {
+      const target = isAuthBypassed() && name === "auth" ? "app" : name;
       document.querySelectorAll(".screen").forEach((screen) => {
         if (screen.classList.contains("debug-only")) return;
-        screen.classList.toggle("active", screen.dataset.screen === name);
+        screen.classList.toggle("active", screen.dataset.screen === target);
       });
+      renderEntryCompanion();
+      renderCompanionPresence();
       reconcileChatLiveRefresh();
     }
 
@@ -3094,6 +4953,11 @@
     const CHAT_QUEUE_STORAGE_KEY = "catchyourpartner.chatQueue";
     const CHAT_QUEUE_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 3;
     const MATCHING_RADIUS_METERS = 300;
+    const AUTH_BYPASS = true;
+
+    if (AUTH_BYPASS) {
+      document.body.classList.add("auth-bypass");
+    }
 
     const profileState = {
       cameraState: "idle",
@@ -3162,6 +5026,13 @@
       token: "",
       user: null,
       busy: false,
+      requireFaceScan: false,
+      biometricBusy: false,
+      biometricAvailable: false,
+      biometricEnrolled: false,
+      biometricHasSession: false,
+      biometricType: "none",
+      biometricLabel: "",
       noteKey: "auth.note",
       phoneBusy: false,
       phoneStatus: "not_started",
@@ -3193,6 +5064,730 @@
       lastCandidateIds: [],
       notificationsRequested: false
     };
+
+    const companionState = {
+      loading: false,
+      backendLive: false,
+      backendAttempted: false,
+      speaking: false,
+      typing: false,
+      autoVoice: false,
+      level: 1,
+      xp: 0,
+      nextLevelXp: 100,
+      mood: "calm",
+      mode: "coach",
+      progressState: "starting",
+      liveLabelKey: "app.more.companion.live.local",
+      voiceLabelKey: "app.more.companion.voice.off",
+      actionLabel: "",
+      bubbleTitleKey: "app.more.companion.bubble.idle.title",
+      bubbleBodyKey: "app.more.companion.bubble.idle.body",
+      bubbleBodyText: "",
+      recommendationText: "",
+      reasons: [],
+      inputDraft: "",
+      lastReply: "",
+      lastLoadedAt: 0,
+      lastSpokenText: "",
+      lastSpokenAt: 0,
+      heartbeatTimer: null,
+      demoTimer: null,
+      demoSceneIndex: 0,
+      demoStarted: false,
+      dockTitle: "",
+      dockBody: "",
+      roomKey: "radar",
+      activeLens: "chemistry"
+    };
+
+    const companionPresenceState = {
+      currentX: typeof window !== "undefined" ? window.innerWidth * 0.78 : 320,
+      currentY: typeof window !== "undefined" ? window.innerHeight * 0.22 : 140,
+      targetX: typeof window !== "undefined" ? window.innerWidth * 0.78 : 320,
+      targetY: typeof window !== "undefined" ? window.innerHeight * 0.22 : 140,
+      running: false
+    };
+
+    function isAuthBypassed() {
+      return AUTH_BYPASS === true;
+    }
+
+    function bootstrapBypassSession() {
+      authState.token = "";
+      authState.user = {
+        id: "guest-bypass",
+        name: lang === "en" ? "Guest" : "Gast",
+        phone_verification_status: "not_started",
+        profile_photo_status: "not_started"
+      };
+      authState.requireFaceScan = false;
+      authState.noteKey = "auth.note";
+      syncPhoneUiStateFromUser();
+      updateAuthControls();
+    }
+
+    function companionModeFromContext(context = {}) {
+      if (context.safety_state && context.safety_state !== "standard" && context.safety_state !== "safety_circle_ready") {
+        return "safety";
+      }
+      if (context.post_meeting_state === "after_meeting" || context.post_meeting_state === "awaiting_ok") {
+        return "reflection";
+      }
+      if (context.meeting_state === "prepared" || context.meeting_state === "accepted" || context.route_state === "ready" || context.route_state === "active") {
+        return "coach";
+      }
+      return "motivation";
+    }
+
+    function deriveLocalCompanionSnapshot() {
+      const verificationReady = profileState.resultState === "ready" || authState.user?.phone_verification_status === "verified";
+      const routeReady = Boolean(meetingState.meetingPoint);
+      const routeActive = meetingState.routingStatus === "active" || meetingState.nativeRouteActive;
+      const bothArrived = Boolean(meetingState.serverMeeting?.both_arrived);
+      const progressState = bothArrived
+        ? "after_meeting"
+        : routeActive
+          ? "route_phase"
+          : routeReady
+            ? "meeting_phase"
+            : radarActive
+              ? "match_phase"
+              : "starting";
+
+      const mode = meetingState.permission === "denied"
+        ? "safety"
+        : bothArrived
+          ? "reflection"
+          : routeReady || routeActive || !verificationReady
+            ? "coach"
+            : "motivation";
+
+      const mood = meetingState.permission === "denied"
+        ? "serious"
+        : bothArrived
+          ? "celebrating"
+          : routeActive
+            ? "focused"
+            : radarActive
+              ? "excited"
+              : verificationReady
+                ? "curious"
+                : "calm";
+
+      let actionLabel = "Trust Layer";
+      let recommendationText = "Vervollstaendige zuerst deinen Trust-Layer, damit Aroundly staerker und sicherer fuer echte Begegnungen optimieren kann.";
+      let reasons = [
+        "Aroundly sieht noch nicht alle Trust-Signale in gruener Qualitaet.",
+        "Mehr Verifizierung verbessert Match-Qualitaet und echtes Vertrauen."
+      ];
+      let bubbleBodyText = "Ich bringe gerade dein Profil, deinen Moment und deine Sicherheit in einen klaren Flow.";
+
+      if (meetingState.permission === "denied") {
+        actionLabel = "Safety Check";
+        recommendationText = "Standort ist blockiert. Ohne Location bleibt Aroundly blind fuer Radar, Treffpunkt und sichere Routen.";
+        reasons = [
+          "Ohne Standort kann kein neutraler Treffpunkt vorbereitet werden.",
+          "Safety und Routing brauchen ein verlassliches Live-Signal."
+        ];
+        bubbleBodyText = "Ich halte den Flow an, bis dein Standort wieder sicher verfuegbar ist.";
+      } else if (routeActive) {
+        actionLabel = "AR Route";
+        recommendationText = "Du bist in Bewegung. Bleib ruhig, folge der Route und nutze den AR Guide fuer die letzten Meter.";
+        reasons = [
+          "Der Treffpunkt ist live vorbereitet.",
+          "Navigation und Timing sind gerade wertvoller als Chat."
+        ];
+        bubbleBodyText = "Ich halte dich fokussiert, bis aus digitalem Momentum ein echter Moment wird.";
+      } else if (routeReady) {
+        actionLabel = "Meeting Accept";
+        recommendationText = "Der Treffpunkt ist da. Jetzt braucht der Flow eine klare Zusage und anschliessend echte Bewegung.";
+        reasons = [
+          "Ein neutraler Treffpunkt ist vorbereitet.",
+          "Aroundly erkennt ein warmes Meeting-Szenario."
+        ];
+        bubbleBodyText = "Die Chemie ist vorbereitet. Jetzt braucht es Entscheidung statt Verzoegerung.";
+      } else if (radarActive) {
+        actionLabel = "Stay Visible";
+        recommendationText = "Dein Radar ist offen. Bleib kurz sichtbar und bereit fuer einen neutralen Treffpunkt statt langem Schreiben.";
+        reasons = [
+          "Momentum ist im Markt.",
+          "Die App ist jetzt auf echte Begegnung statt Swipe-Loop eingestellt."
+        ];
+        bubbleBodyText = "Du bist sichtbar. Ich halte den Fokus auf echte Begegnung, nicht auf Rauschen.";
+      }
+
+      return {
+        backendLive: false,
+        level: verificationReady ? 6 : 3,
+        xp: routeActive ? 640 : routeReady ? 520 : radarActive ? 410 : 240,
+        nextLevelXp: routeActive ? 900 : 700,
+        mood,
+        mode,
+        progressState,
+        liveLabelKey: "app.more.companion.live.local",
+        voiceLabelKey: "speechSynthesis" in window ? "app.more.companion.voice.on" : "app.more.companion.voice.off",
+        actionLabel,
+        bubbleTitleKey: "app.more.companion.bubble.idle.title",
+        bubbleBodyKey: "",
+        bubbleBodyText,
+        recommendationText,
+        reasons,
+        lastReply: bubbleBodyText
+      };
+    }
+
+    function resolveCompanionGuide(snapshot = {}) {
+      const roomKey = activeTab === "treffen"
+        ? "treffen"
+        : activeTab === "profil"
+          ? "profil"
+          : activeTab === "more"
+            ? "more"
+            : "radar";
+
+      const roomPositions = {
+        profil: { x: -112, y: -8 },
+        radar: { x: -104, y: 54 },
+        treffen: { x: 104, y: 50 },
+        more: { x: 112, y: -10 }
+      };
+
+      let guideTitleKey = `app.more.companion.guide.${roomKey}.title`;
+      let guideBodyKey = `app.more.companion.guide.${roomKey}.body`;
+
+      if (roomKey === "profil") {
+        guideBodyKey = profileState.resultState === "ready"
+          ? "app.more.companion.guide.profil.ready"
+          : "app.more.companion.guide.profil.pending";
+      } else if (roomKey === "radar") {
+        guideBodyKey = radarActive
+          ? "app.more.companion.guide.radar.active"
+          : "app.more.companion.guide.radar.idle";
+      } else if (roomKey === "treffen") {
+        guideBodyKey = meetingState.meetingPoint
+          ? "app.more.companion.guide.treffen.active"
+          : "app.more.companion.guide.treffen.idle";
+      }
+
+      return {
+        roomKey,
+        roomLabelKey: `app.more.companion.rooms.${roomKey}`,
+        roomPosition: roomPositions[roomKey] || roomPositions.radar,
+        guideTitleKey,
+        guideBodyKey
+      };
+    }
+
+    function renderCompanionRoomGrid(container, activeRoomKey) {
+      if (!container) return;
+      const roomOrder = ["profil", "radar", "treffen", "more"];
+      const activeIndex = roomOrder.indexOf(activeRoomKey);
+      container.innerHTML = roomOrder.map((roomKey, index) => {
+        const stateKey = index < activeIndex
+          ? "app.more.companion.room.ready"
+          : roomKey === activeRoomKey
+            ? "app.more.companion.room.active"
+            : "app.more.companion.room.locked";
+        const classes = [
+          "companion-room-card",
+          index < activeIndex ? "is-complete" : "",
+          roomKey === activeRoomKey ? "is-active" : ""
+        ].filter(Boolean).join(" ");
+        return `
+          <div class="${classes}">
+            <div class="companion-room-label">${t(`app.more.companion.rooms.${roomKey}`)}</div>
+            <div class="companion-room-state">${t(stateKey)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function companionLensFromContext(snapshot = {}) {
+      if (snapshot.mode === "safety") return "radar";
+      if (activeTab === "profil") return "attachment";
+      if (activeTab === "treffen" && meetingState.meetingPoint) return "architect";
+      if (snapshot.mode === "reflection") return "repair";
+      if ((authState.user?.astro_sign || "").trim()) return "astro";
+      return "chemistry";
+    }
+
+    function resolveCompanionLens(snapshot = {}) {
+      const lensKey = companionState.activeLens || companionLensFromContext(snapshot);
+      return {
+        lensKey,
+        focusKey: `app.more.companion.focus.${lensKey}`,
+        warningKey: `app.more.companion.warning.${lensKey}`,
+        moveKey: `app.more.companion.move.${lensKey}`,
+      };
+    }
+
+    function renderCompanionLensGrid(container, activeLensKey) {
+      if (!container) return;
+      const lenses = ["chemistry", "attachment", "repair", "astro", "architect", "radar"];
+      container.innerHTML = lenses.map((lensKey) => `
+        <button class="companion-lens-card ${lensKey === activeLensKey ? "is-active" : ""}" type="button" data-companion-lens="${lensKey}">
+          <div class="companion-lens-kicker">${t(`app.more.companion.lens.${lensKey}.kicker`)}</div>
+          <div class="companion-lens-title">${t(`app.more.companion.lens.${lensKey}`)}</div>
+          <div class="companion-lens-body">${t(`app.more.companion.lens.${lensKey}.body`)}</div>
+        </button>
+      `).join("");
+    }
+
+    function resolveCompanionRail(snapshot = {}) {
+      const roomKey = snapshot.roomKey || "radar";
+      const primaryLabelKey = roomKey === "profil"
+        ? "app.companion.rail.primary.profil.go"
+        : roomKey === "treffen"
+          ? "app.companion.rail.primary.treffen.go"
+          : roomKey === "more"
+            ? "app.companion.rail.primary.more.go"
+            : radarActive
+              ? "app.companion.rail.primary.radar.more"
+              : "app.companion.rail.primary.radar.start";
+
+      const secondaryLabelKey = roomKey === "treffen"
+        ? "app.companion.rail.secondary.safety"
+        : roomKey === "profil"
+          ? "app.companion.rail.secondary.next"
+          : roomKey === "more"
+            ? "app.companion.rail.secondary.energy"
+            : "app.companion.rail.secondary.energy";
+
+      const secondaryPrompt = roomKey === "treffen"
+        ? t("app.more.companion.prompts.safety")
+        : roomKey === "profil"
+          ? t("app.more.companion.prompts.next")
+          : t("app.more.companion.prompts.energy");
+
+      return {
+        kickerKey: "app.companion.rail.kicker",
+        titleKey: `app.companion.rail.${roomKey}.title`,
+        bodyKey: `app.companion.rail.${roomKey}.body`,
+        primaryLabelKey,
+        secondaryLabelKey,
+        secondaryPrompt
+      };
+    }
+
+    function renderCompanionRailPath(container, activeRoomKey) {
+      if (!container) return;
+      const roomOrder = ["profil", "radar", "treffen", "more"];
+      const activeIndex = roomOrder.indexOf(activeRoomKey);
+      container.innerHTML = roomOrder.map((roomKey, index) => {
+        const classes = [
+          "companion-rail-node",
+          index < activeIndex ? "is-passed" : "",
+          roomKey === activeRoomKey ? "is-active" : ""
+        ].filter(Boolean).join(" ");
+        return `<div class="${classes}">${t(`app.more.companion.rooms.${roomKey}`)}</div>`;
+      }).join("");
+    }
+
+    function enrichCompanionSnapshotForActiveTab(snapshot) {
+      const next = { ...snapshot };
+      if (activeTab === "radar") {
+        next.actionLabel = radarActive ? "Radar Live" : "Radar Pulse";
+        next.bubbleBodyText = radarActive
+          ? "Ich halte auf Radar die Energie hoch, aber kurz. Wenn hier etwas passiert, fuehre ich dich direkt in den Treffpunkt."
+          : "Auf Radar sollte ich dich nicht nerven. Ich bleibe kurz und sage nur, wann Sichtbarkeit Sinn macht.";
+        next.recommendationText = radarActive
+          ? "Du bist sichtbar. Halte das Fenster bewusst offen statt dich in Text zu verlieren."
+          : "Wenn du bereit bist, ist Radar der schnellste Weg von Ruhe zu echter Begegnung.";
+      } else if (activeTab === "treffen") {
+        next.actionLabel = meetingState.meetingPoint ? "Meet Flow" : "Meet Setup";
+        next.bubbleBodyText = meetingState.meetingPoint
+          ? "Hier bin ich dein stiller Navigator. Treffpunkt, Route und Timing sind jetzt wichtiger als Show."
+          : "Im Treffen-Tab soll ich dir den naechsten konkreten Schritt sagen, nicht dich zuschwatzen.";
+        next.recommendationText = meetingState.meetingPoint
+          ? "Treffpunkt und Route stehen im Fokus. Ich halte mich knapp und kontextklar."
+          : "Sobald Standort und Match bereit sind, kippt dieser Tab in einen echten Meet Flow.";
+      } else if (activeTab === "profil") {
+        next.actionLabel = profileState.resultState === "ready" ? "Trust Ready" : "Trust Build";
+        next.bubbleBodyText = profileState.resultState === "ready"
+          ? "Dein Trust-Layer ist sichtbar. Von hier aus kann Aroundly sicherer und selbstbewusster agieren."
+          : "Im Profil helfe ich nur beim naechsten echten Trust-Schritt. Mehr nicht.";
+        next.recommendationText = profileState.resultState === "ready"
+          ? "Face- und Trust-Signale sind stark. Das verbessert echte Begegnungen."
+          : "Bring zuerst Scan und Verifikation in Gruen, dann wird der Rest der App spuerbar staerker.";
+      } else if (activeTab === "more") {
+        next.actionLabel = "Companion Live";
+      }
+      next.dockTitle = activeTab === "radar"
+        ? "Aroundly auf Radar"
+        : activeTab === "treffen"
+          ? "Aroundly im Treffen"
+          : activeTab === "profil"
+            ? "Aroundly im Profil"
+            : "Aroundly Companion";
+      Object.assign(next, resolveCompanionGuide(next));
+      Object.assign(next, resolveCompanionLens(next));
+      Object.assign(next, resolveCompanionRail(next));
+      next.dockBody = activeTab === "more"
+        ? (next.recommendationText || next.bubbleBodyText)
+        : t(next.guideBodyKey);
+      return next;
+    }
+
+    function renderCompanionUI() {
+      const railEl = document.getElementById("companionRail");
+      const railKickerEl = document.getElementById("companionRailKicker");
+      const railTitleEl = document.getElementById("companionRailTitle");
+      const railBodyEl = document.getElementById("companionRailBody");
+      const railRoomEl = document.getElementById("companionRailRoom");
+      const railModeEl = document.getElementById("companionRailMode");
+      const railActionEl = document.getElementById("companionRailAction");
+      const railPathEl = document.getElementById("companionRailPath");
+      const railPrimaryEl = document.getElementById("companionRailPrimary");
+      const railSecondaryEl = document.getElementById("companionRailSecondary");
+      const lensChipEl = document.getElementById("companionLensChip");
+      const lensGridEl = document.getElementById("companionLensGrid");
+      const focusValueEl = document.getElementById("companionFocusValue");
+      const warningValueEl = document.getElementById("companionWarningValue");
+      const moveValueEl = document.getElementById("companionMoveValue");
+      const stageEl = document.getElementById("companionStage");
+      const roomGridEl = document.getElementById("companionRoomGrid");
+      const avatarEl = document.getElementById("companionAvatar");
+      const liveChipEl = document.getElementById("companionLiveChip");
+      const moodChipEl = document.getElementById("companionMoodChip");
+      const modeChipEl = document.getElementById("companionModeChip");
+      const contextChipEl = document.getElementById("companionContextChip");
+      const roomChipEl = document.getElementById("companionRoomChip");
+      const guideKickerEl = document.getElementById("companionGuideKicker");
+      const guideTitleEl = document.getElementById("companionGuideTitle");
+      const guideBodyEl = document.getElementById("companionGuideBody");
+      const bubbleTitleEl = document.getElementById("companionBubbleTitle");
+      const bubbleBodyEl = document.getElementById("companionBubbleBody");
+      const recommendationEl = document.getElementById("companionRecommendation");
+      const reasonsEl = document.getElementById("companionReasons");
+      const levelValueEl = document.getElementById("companionLevelValue");
+      const xpValueEl = document.getElementById("companionXpValue");
+      const actionValueEl = document.getElementById("companionActionValue");
+      const voiceValueEl = document.getElementById("companionVoiceValue");
+      const voiceMeterEl = document.getElementById("companionVoiceMeter");
+      const dockTitleEl = document.getElementById("companionDockTitle");
+      const dockBodyEl = document.getElementById("companionDockBody");
+      const dockAvatarEl = document.getElementById("companionDockAvatar");
+      const inputEl = document.getElementById("companionInput");
+      const sendButtonEl = document.getElementById("companionSendButton");
+      const speakButtonEl = document.getElementById("companionSpeakButton");
+
+      if (!railEl || !railKickerEl || !railTitleEl || !railBodyEl || !railRoomEl || !railModeEl || !railActionEl || !railPathEl || !railPrimaryEl || !railSecondaryEl || !lensChipEl || !lensGridEl || !focusValueEl || !warningValueEl || !moveValueEl || !stageEl || !roomGridEl || !avatarEl || !liveChipEl || !moodChipEl || !modeChipEl || !contextChipEl || !roomChipEl || !guideKickerEl || !guideTitleEl || !guideBodyEl || !bubbleTitleEl || !bubbleBodyEl || !recommendationEl || !reasonsEl || !levelValueEl || !xpValueEl || !actionValueEl || !voiceValueEl || !voiceMeterEl || !dockTitleEl || !dockBodyEl || !dockAvatarEl || !inputEl || !sendButtonEl || !speakButtonEl) return;
+
+      const resolved = enrichCompanionSnapshotForActiveTab(companionState);
+      companionState.roomKey = resolved.roomKey;
+
+      railEl.dataset.room = resolved.roomKey || "radar";
+      railKickerEl.textContent = t(resolved.kickerKey);
+      railTitleEl.textContent = t(resolved.titleKey);
+      railBodyEl.textContent = t(resolved.bodyKey);
+      railRoomEl.textContent = t(resolved.roomLabelKey);
+      railModeEl.textContent = t(`app.more.companion.mode.${resolved.mode}`);
+      railActionEl.textContent = resolved.actionLabel;
+      railPrimaryEl.textContent = t(resolved.primaryLabelKey);
+      railSecondaryEl.textContent = t(resolved.secondaryLabelKey);
+      railSecondaryEl.dataset.prompt = resolved.secondaryPrompt || "";
+      renderCompanionRailPath(railPathEl, resolved.roomKey || "radar");
+      lensChipEl.textContent = t(`app.more.companion.lens.${resolved.lensKey}`);
+      focusValueEl.textContent = t(resolved.focusKey);
+      warningValueEl.textContent = t(resolved.warningKey);
+      moveValueEl.textContent = t(resolved.moveKey);
+      renderCompanionLensGrid(lensGridEl, resolved.lensKey);
+
+      stageEl.dataset.room = resolved.roomKey || "radar";
+      stageEl.style.setProperty("--companion-room-x", `${resolved.roomPosition?.x || 0}px`);
+      stageEl.style.setProperty("--companion-room-y", `${resolved.roomPosition?.y || 24}px`);
+      renderCompanionRoomGrid(roomGridEl, resolved.roomKey || "radar");
+      avatarEl.dataset.mood = resolved.mood || "calm";
+      avatarEl.classList.toggle("is-speaking", companionState.speaking);
+      voiceMeterEl.classList.toggle("is-speaking", companionState.speaking);
+      avatarEl.style.setProperty("--companion-tilt", resolved.mode === "safety" ? "-10deg" : resolved.mode === "reflection" ? "4deg" : "10deg");
+
+      liveChipEl.textContent = t(companionState.loading ? "app.more.companion.bubble.loading.title" : resolved.liveLabelKey);
+      moodChipEl.textContent = resolved.mood;
+      modeChipEl.textContent = t(`app.more.companion.mode.${resolved.mode}`);
+      contextChipEl.textContent = t(`app.more.companion.context.${resolved.progressState}`);
+      roomChipEl.textContent = t(resolved.roomLabelKey);
+      guideKickerEl.textContent = t("app.more.companion.guide.kicker");
+      guideTitleEl.textContent = t(resolved.guideTitleKey);
+      guideBodyEl.textContent = t(resolved.guideBodyKey);
+      bubbleTitleEl.textContent = t(resolved.bubbleTitleKey);
+      bubbleBodyEl.textContent = companionState.loading
+        ? t("app.more.companion.bubble.loading.body")
+        : companionState.typing
+          ? "..."
+          : (resolved.bubbleBodyText || t(resolved.bubbleBodyKey));
+      recommendationEl.textContent = resolved.recommendationText;
+      levelValueEl.textContent = `L${resolved.level}`;
+      xpValueEl.textContent = `${resolved.xp}/${resolved.nextLevelXp}`;
+      actionValueEl.textContent = resolved.actionLabel;
+      voiceValueEl.textContent = t(companionState.voiceLabelKey);
+      dockTitleEl.textContent = resolved.dockTitle;
+      dockBodyEl.textContent = resolved.dockBody;
+      dockAvatarEl.style.setProperty("--dock-tilt", resolved.mode === "safety" ? "-10deg" : resolved.mode === "reflection" ? "4deg" : "10deg");
+      inputEl.value = companionState.inputDraft || "";
+      sendButtonEl.disabled = companionState.loading || !inputEl.value.trim();
+      sendButtonEl.style.opacity = sendButtonEl.disabled ? "0.6" : "1";
+      speakButtonEl.disabled = companionState.loading || !(companionState.lastReply || companionState.bubbleBodyText || companionState.recommendationText);
+      speakButtonEl.style.opacity = speakButtonEl.disabled ? "0.6" : "1";
+
+      reasonsEl.innerHTML = "";
+      (resolved.reasons || []).slice(0, 2).forEach((reason, index) => {
+        const row = document.createElement("div");
+        row.className = "bullet";
+        const mark = document.createElement("div");
+        mark.className = "bullet-mark";
+        mark.textContent = String(index + 1);
+        const text = document.createElement("div");
+        text.textContent = reason;
+        row.appendChild(mark);
+        row.appendChild(text);
+        reasonsEl.appendChild(row);
+      });
+      renderCompanionPresence();
+    }
+
+    async function loadCompanionExperience({ silent = false } = {}) {
+      const now = Date.now();
+      if (companionState.loading) return;
+      if (silent && now - companionState.lastLoadedAt < 12000) return;
+
+      companionState.loading = true;
+      if (!silent) {
+        companionState.bubbleTitleKey = "app.more.companion.bubble.loading.title";
+        companionState.bubbleBodyText = "";
+      }
+      renderCompanionUI();
+
+      const backendOrigin = getBackendOrigin();
+      const canUseBackend = Boolean(backendOrigin && authState.token);
+
+      try {
+        if (!canUseBackend) {
+          throw new Error("companion-local-only");
+        }
+
+        const headers = { Authorization: `Bearer ${authState.token}` };
+        const [stateResponse, recommendationResponse] = await Promise.all([
+          fetch(`${backendOrigin}/companion/state`, { headers }),
+          fetch(`${backendOrigin}/companion/recommendation`, { headers })
+        ]);
+
+        if (!stateResponse.ok || !recommendationResponse.ok) {
+          throw new Error(`companion-fetch-failed:${stateResponse.status}/${recommendationResponse.status}`);
+        }
+
+        const stateData = await stateResponse.json();
+        const recommendationData = await recommendationResponse.json();
+        const context = recommendationData.context || stateData.buddy_context || {};
+
+        Object.assign(companionState, {
+          backendLive: true,
+          backendAttempted: true,
+          level: Number.isFinite(stateData.level) ? stateData.level : 1,
+          xp: Number.isFinite(stateData.xp) ? stateData.xp : 0,
+          nextLevelXp: Number.isFinite(stateData.next_level_xp) ? stateData.next_level_xp : 100,
+          mood: stateData.mood || "calm",
+          mode: companionModeFromContext(context),
+          progressState: context.progress_state || "starting",
+          liveLabelKey: "app.more.companion.live.backend",
+          voiceLabelKey: "speechSynthesis" in window ? "app.more.companion.voice.on" : "app.more.companion.voice.off",
+          actionLabel: recommendationData.suggested_action || "next_move",
+          bubbleTitleKey: "app.more.companion.bubble.idle.title",
+          bubbleBodyKey: "",
+          bubbleBodyText: stateData.last_message || recommendationData.summary || t("app.more.companion.bubble.idle.body"),
+          recommendationText: recommendationData.headline
+            ? `${recommendationData.headline} ${recommendationData.summary || ""}`.trim()
+            : (recommendationData.summary || ""),
+          reasons: Array.isArray(recommendationData.reasons) ? recommendationData.reasons : [],
+          lastReply: stateData.last_message || recommendationData.summary || "",
+          lastLoadedAt: now
+        });
+      } catch (error) {
+        const fallback = deriveLocalCompanionSnapshot();
+        Object.assign(companionState, fallback, {
+          backendAttempted: true,
+          lastLoadedAt: now
+        });
+      } finally {
+        companionState.loading = false;
+        renderCompanionUI();
+      }
+    }
+
+    function deriveLocalCompanionReply(text) {
+      const normalized = String(text || "").trim().toLowerCase();
+      const snapshot = deriveLocalCompanionSnapshot();
+
+      if (normalized.includes("safety") || normalized.includes("sicher")) {
+        return {
+          mood: "serious",
+          mode: "safety",
+          actionLabel: "Safety First",
+          reply: "Erster Move: oeffentlicher Treffpunkt, Safety Circle bereit halten und kein privater Ort, bevor Vertrauen sichtbar geworden ist."
+        };
+      }
+      if (normalized.includes("energie") || normalized.includes("energy") || normalized.includes("motivier")) {
+        return {
+          mood: "hyped",
+          mode: "motivation",
+          actionLabel: "Momentum Push",
+          reply: "Du brauchst keinen lauteren Flow, sondern einen klareren. Aroundly setzt auf echte Bewegung statt endloser Nachrichten."
+        };
+      }
+      return {
+        mood: snapshot.mood,
+        mode: snapshot.mode,
+        actionLabel: snapshot.actionLabel,
+        reply: snapshot.recommendationText || snapshot.bubbleBodyText
+      };
+    }
+
+    function speakCompanion(text) {
+      if (!text || !("speechSynthesis" in window)) {
+        companionState.voiceLabelKey = "app.more.companion.voice.off";
+        renderCompanionUI();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang === "en" ? "en-US" : "de-DE";
+      utterance.rate = 1;
+      utterance.pitch = 1.02;
+      companionState.speaking = true;
+      companionState.voiceLabelKey = "app.more.companion.voice.on";
+      renderCompanionUI();
+      utterance.onend = () => {
+        companionState.speaking = false;
+        renderCompanionUI();
+      };
+      utterance.onerror = () => {
+        companionState.speaking = false;
+        renderCompanionUI();
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function maybeSpeakCompanion(text, { force = false, minIntervalMs = 24000 } = {}) {
+      const cleanText = String(text || "").trim();
+      if (!cleanText) return false;
+      const now = Date.now();
+      const repeated = companionState.lastSpokenText === cleanText;
+      const tooSoon = now - companionState.lastSpokenAt < minIntervalMs;
+      if (!force && (!companionState.autoVoice || repeated || tooSoon)) {
+        return false;
+      }
+      companionState.lastSpokenText = cleanText;
+      companionState.lastSpokenAt = now;
+      speakCompanion(cleanText);
+      return true;
+    }
+
+    async function sendCompanionMessage(text) {
+      const cleanText = String(text || "").trim();
+      if (!cleanText || companionState.loading) return;
+
+      companionState.inputDraft = cleanText;
+      companionState.loading = true;
+      renderCompanionUI();
+
+      const backendOrigin = getBackendOrigin();
+      const canUseBackend = Boolean(backendOrigin && authState.token);
+
+      try {
+        if (!canUseBackend) {
+          throw new Error("companion-local-only");
+        }
+
+        const response = await fetch(`${backendOrigin}/companion/say`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authState.token}`
+          },
+          body: JSON.stringify({ text: cleanText })
+        });
+
+        if (!response.ok) {
+          throw new Error(`companion-say-failed:${response.status}`);
+        }
+
+        const data = await response.json();
+        companionState.backendLive = true;
+        companionState.liveLabelKey = "app.more.companion.live.backend";
+        companionState.mood = data.mood || companionState.mood;
+        companionState.mode = data.mode || companionState.mode;
+        companionState.progressState = data.context?.progress_state || companionState.progressState;
+        companionState.actionLabel = data.suggested_action || companionState.actionLabel;
+        companionState.bubbleTitleKey = "app.more.companion.bubble.idle.title";
+        companionState.bubbleBodyText = data.reply || companionState.bubbleBodyText;
+        companionState.recommendationText = data.reply || companionState.recommendationText;
+        companionState.lastReply = data.reply || "";
+      } catch (error) {
+        const fallback = deriveLocalCompanionReply(cleanText);
+        companionState.backendLive = false;
+        companionState.liveLabelKey = "app.more.companion.live.local";
+        companionState.mood = fallback.mood;
+        companionState.mode = fallback.mode;
+        companionState.actionLabel = fallback.actionLabel;
+        companionState.bubbleTitleKey = "app.more.companion.bubble.idle.title";
+        companionState.bubbleBodyText = fallback.reply;
+        companionState.recommendationText = fallback.reply;
+        companionState.lastReply = fallback.reply;
+      } finally {
+        companionState.loading = false;
+        companionState.inputDraft = "";
+        renderCompanionUI();
+        if (companionState.lastReply) {
+          maybeSpeakCompanion(companionState.lastReply, { force: true, minIntervalMs: 0 });
+        }
+      }
+    }
+
+    async function runCompanionRailPrimaryAction() {
+      if (activeTab === "profil") {
+        setTab("profil");
+        const target = document.getElementById("profileCameraButton");
+        target?.click();
+        return;
+      }
+      if (activeTab === "treffen") {
+        setTab("treffen");
+        const target = document.getElementById("meetingFlowCta");
+        target?.click();
+        return;
+      }
+      if (activeTab === "more" || radarActive) {
+        setTab("more");
+        return;
+      }
+      const target = document.getElementById("radarStartButton");
+      if (target && !target.disabled) {
+        target.click();
+      } else {
+        setTab("more");
+      }
+    }
+
+    async function runCompanionRailSecondaryAction() {
+      const button = document.getElementById("companionRailSecondary");
+      const prompt = button?.dataset.prompt || t("app.more.companion.prompts.next");
+      setTab("more");
+      await sendCompanionMessage(prompt);
+    }
+
+    function promptForLens(lensKey) {
+      const prompts = {
+        chemistry: lang === "en" ? "Read the chemistry and tell me the next move." : "Lies die Chemie und sag mir den naechsten Move.",
+        attachment: lang === "en" ? "Read the attachment pattern behind this dynamic." : "Lies das Bindungsmuster hinter dieser Dynamik.",
+        repair: lang === "en" ? "Coach me through repair and honest wording." : "Fuehre mich durch Repair und ehrliche Sprache.",
+        astro: lang === "en" ? "Give me an astro mirror for this romantic dynamic." : "Gib mir einen Astro-Spiegel fuer diese romantische Dynamik.",
+        architect: lang === "en" ? "Design the strongest next date for this context." : "Designe das staerkste naechste Date fuer diesen Kontext.",
+        radar: lang === "en" ? "Scan this for red flags and safety issues." : "Scanne das auf Red Flags und Safety-Risiken."
+      };
+      return prompts[lensKey] || t("app.more.companion.prompts.next");
+    }
 
     function normalizePhoneResponse(data) {
       if (!data || typeof data !== "object") return null;
@@ -3914,6 +6509,7 @@
         profileState.lastErrorKey = "";
       }
 
+      completeInitialFaceScanIfReady();
       updateProfileUI();
       scheduleMatchingSync("scan");
     }
@@ -4075,6 +6671,7 @@
         }
       }
 
+      completeInitialFaceScanIfReady();
       updateProfileUI();
     }
 
@@ -4823,22 +7420,34 @@
       return response.json();
     }
 
+    function normalizeBackendOrigin(origin) {
+      const trimmed = typeof origin === "string" ? origin.trim().replace(/\/$/, "") : "";
+      if (!trimmed) return "";
+      if (trimmed === "https://catch-your-partner-api.onrender.com") {
+        return "https://catch-your-partner-api-rami9332.onrender.com";
+      }
+      if (trimmed === "https://catch-your-partner-web.onrender.com") {
+        return "https://catch-your-partner-api-rami9332.onrender.com";
+      }
+      return trimmed;
+    }
+
     function getBackendOrigin() {
       const injectedBackend = typeof window.__CYP_BACKEND__ === "string" ? window.__CYP_BACKEND__ : "";
-      if (injectedBackend) return injectedBackend.replace(/\/$/, "");
+      if (injectedBackend) return normalizeBackendOrigin(injectedBackend);
       const runtimeBackend =
         typeof window.__CYP_RUNTIME_CONFIG__?.backendOrigin === "string"
           ? window.__CYP_RUNTIME_CONFIG__.backendOrigin
           : "";
-      if (runtimeBackend) return runtimeBackend.replace(/\/$/, "");
+      if (runtimeBackend) return normalizeBackendOrigin(runtimeBackend);
       try {
         const storedBackend = localStorage.getItem("catchyourpartner.backendOrigin");
-        if (storedBackend) return storedBackend.replace(/\/$/, "");
+        if (storedBackend) return normalizeBackendOrigin(storedBackend);
       } catch (error) {
         // Local storage fallback is best effort only.
       }
       const explicitBackend = params.get("backend");
-      if (explicitBackend) return explicitBackend.replace(/\/$/, "");
+      if (explicitBackend) return normalizeBackendOrigin(explicitBackend);
       if (!window.location.hostname) return "";
       return `${window.location.protocol}//${window.location.hostname}:8000`;
     }
@@ -5104,10 +7713,235 @@
       }
     }
 
+    function entryCompanionConfig() {
+      const activeScreenName = document.querySelector(".screen.active:not(.debug-only)")?.dataset.screen || "welcome";
+      if (activeScreenName === "auth") {
+        const loginMode = authMode === "login";
+        return {
+          titleKey: loginMode ? "entry.companion.auth.login.title" : "entry.companion.auth.register.title",
+          bodyKey: loginMode ? "entry.companion.auth.login.body" : "entry.companion.auth.register.body",
+          pill1Key: loginMode ? "entry.companion.auth.login.pill1" : "entry.companion.auth.register.pill1",
+          pill2Key: loginMode ? "entry.companion.auth.login.pill2" : "entry.companion.auth.register.pill2",
+          primaryKey: loginMode ? "entry.companion.auth.login.primary" : "entry.companion.auth.register.primary",
+          secondaryKey: loginMode ? "entry.companion.auth.login.secondary" : "entry.companion.auth.register.secondary",
+          primaryCommand: "submit-auth",
+          secondaryCommand: loginMode ? "go-explain" : "switch-login"
+        };
+      }
+      if (activeScreenName === "explain") {
+        return {
+          titleKey: "entry.companion.explain.title",
+          bodyKey: "entry.companion.explain.body",
+          pill1Key: "entry.companion.explain.pill1",
+          pill2Key: "entry.companion.explain.pill2",
+          primaryKey: "entry.companion.explain.primary",
+          secondaryKey: "entry.companion.explain.secondary",
+          primaryCommand: "go-auth",
+          secondaryCommand: "go-welcome"
+        };
+      }
+      return {
+        titleKey: "entry.companion.welcome.title",
+        bodyKey: "entry.companion.welcome.body",
+        pill1Key: "entry.companion.welcome.pill1",
+        pill2Key: "entry.companion.welcome.pill2",
+        primaryKey: "entry.companion.welcome.primary",
+        secondaryKey: "entry.companion.welcome.secondary",
+        primaryCommand: "go-explain",
+        secondaryCommand: "go-app"
+      };
+    }
+
+    function renderEntryCompanion() {
+      const config = entryCompanionConfig();
+      document.querySelectorAll("[data-entry-companion]").forEach((card) => {
+        const kickerEl = card.querySelector("[data-entry-companion-kicker]");
+        const titleEl = card.querySelector("[data-entry-companion-title]");
+        const bodyEl = card.querySelector("[data-entry-companion-body]");
+        const pill1El = card.querySelector("[data-entry-companion-pill-1]");
+        const pill2El = card.querySelector("[data-entry-companion-pill-2]");
+        const primaryEl = card.querySelector('[data-entry-companion-action="primary"]');
+        const secondaryEl = card.querySelector('[data-entry-companion-action="secondary"]');
+        if (!kickerEl || !titleEl || !bodyEl || !pill1El || !pill2El || !primaryEl || !secondaryEl) return;
+
+        kickerEl.textContent = t("entry.companion.kicker");
+        titleEl.textContent = t(config.titleKey);
+        bodyEl.textContent = t(config.bodyKey);
+        pill1El.textContent = t(config.pill1Key);
+        pill2El.textContent = t(config.pill2Key);
+        primaryEl.textContent = t(config.primaryKey);
+        secondaryEl.textContent = t(config.secondaryKey);
+        primaryEl.dataset.entryCommand = config.primaryCommand;
+        secondaryEl.dataset.entryCommand = config.secondaryCommand;
+      });
+    }
+
+    function resolveCompanionPresence() {
+      const activeScreenName = document.querySelector(".screen.active:not(.debug-only)")?.dataset.screen || "welcome";
+      const width = window.innerWidth || 390;
+      const height = window.innerHeight || 844;
+      const activeRoom = activeTab === "treffen"
+        ? "treffen"
+        : activeTab === "profil"
+          ? "profil"
+          : activeTab === "more"
+            ? "more"
+            : "radar";
+
+      if (activeScreenName === "welcome") {
+        return {
+          x: width * 0.72,
+          y: height * 0.18,
+          side: "left",
+          kicker: t("entry.companion.kicker"),
+          title: t("entry.companion.welcome.title"),
+          body: t("entry.companion.welcome.body"),
+          pill1: t("entry.companion.welcome.pill1"),
+          pill2: t("entry.companion.welcome.pill2")
+        };
+      }
+      if (activeScreenName === "explain") {
+        return {
+          x: width * 0.16,
+          y: height * 0.28,
+          side: "right",
+          kicker: t("entry.companion.kicker"),
+          title: t("entry.companion.explain.title"),
+          body: t("entry.companion.explain.body"),
+          pill1: t("entry.companion.explain.pill1"),
+          pill2: t("entry.companion.explain.pill2")
+        };
+      }
+      if (activeScreenName === "auth") {
+        const loginMode = authMode === "login";
+        return {
+          x: width * 0.8,
+          y: height * 0.24,
+          side: "left",
+          kicker: t("entry.companion.kicker"),
+          title: t(loginMode ? "entry.companion.auth.login.title" : "entry.companion.auth.register.title"),
+          body: t(loginMode ? "entry.companion.auth.login.body" : "entry.companion.auth.register.body"),
+          pill1: t(loginMode ? "entry.companion.auth.login.pill1" : "entry.companion.auth.register.pill1"),
+          pill2: t(loginMode ? "entry.companion.auth.login.pill2" : "entry.companion.auth.register.pill2")
+        };
+      }
+      if (activeScreenName === "chat") {
+        return {
+          x: width * 0.76,
+          y: height * 0.14,
+          side: "left",
+          kicker: "Chat Guide",
+          title: "Ich bleibe ueber euch in Bewegung",
+          body: "Auch hier schwebe ich nicht als Block, sondern lese den Moment ueber euch und halte den Ton bewusst.",
+          pill1: "Live Chat",
+          pill2: "Tone Read"
+        };
+      }
+      const roomMap = {
+        radar: { x: width * 0.78, y: height * 0.66, side: "left" },
+        treffen: { x: width * 0.78, y: height * 0.34, side: "left" },
+        profil: { x: width * 0.18, y: height * 0.44, side: "right" },
+        more: { x: width * 0.8, y: height * 0.28, side: "left" }
+      };
+      const roomConfig = roomMap[activeRoom] || roomMap.radar;
+      return {
+        x: roomConfig.x,
+        y: roomConfig.y,
+        side: roomConfig.side,
+        kicker: t(companionState.loading ? "app.more.companion.bubble.loading.title" : "app.more.companion.guide.kicker"),
+        title: activeRoom === "more"
+          ? t(`app.more.companion.lens.${companionState.activeLens || "chemistry"}`)
+          : t(`app.more.companion.rooms.${activeRoom}`),
+        body: companionState.loading
+          ? t("app.more.companion.bubble.loading.body")
+          : (companionState.lastReply || companionState.recommendationText || companionState.bubbleBodyText || t("app.more.companion.bubble.idle.body")),
+        pill1: t(`app.more.companion.mode.${companionState.mode || "coach"}`),
+        pill2: companionState.actionLabel || t("app.more.companion.context.starting")
+      };
+    }
+
+    function renderCompanionPresence() {
+      const presenceEl = document.getElementById("companionPresence");
+      const kickerEl = document.getElementById("companionPresenceKicker");
+      const titleEl = document.getElementById("companionPresenceTitle");
+      const bodyEl = document.getElementById("companionPresenceBody");
+      const pill1El = document.getElementById("companionPresencePill1");
+      const pill2El = document.getElementById("companionPresencePill2");
+      if (!presenceEl || !kickerEl || !titleEl || !bodyEl || !pill1El || !pill2El) return;
+
+      const next = resolveCompanionPresence();
+      companionPresenceState.targetX = next.x;
+      companionPresenceState.targetY = next.y;
+      presenceEl.dataset.bubbleSide = next.side;
+      kickerEl.textContent = next.kicker;
+      titleEl.textContent = next.title;
+      bodyEl.textContent = next.body;
+      pill1El.textContent = next.pill1;
+      pill2El.textContent = next.pill2;
+    }
+
+    function startCompanionPresenceLoop() {
+      if (companionPresenceState.running) return;
+      companionPresenceState.running = true;
+      const step = () => {
+        const presenceEl = document.getElementById("companionPresence");
+        if (presenceEl) {
+          companionPresenceState.currentX += (companionPresenceState.targetX - companionPresenceState.currentX) * 0.08;
+          companionPresenceState.currentY += (companionPresenceState.targetY - companionPresenceState.currentY) * 0.08;
+          presenceEl.style.setProperty("--presence-x", `${companionPresenceState.currentX}px`);
+          presenceEl.style.setProperty("--presence-y", `${companionPresenceState.currentY}px`);
+        }
+        window.requestAnimationFrame(step);
+      };
+      window.requestAnimationFrame(step);
+    }
+
     function setAuthNote(key) {
       authState.noteKey = key;
       const noteEl = document.getElementById("authStatusNote");
       if (noteEl) noteEl.textContent = t(key);
+      renderEntryCompanion();
+    }
+
+    function updateAuthControls() {
+      const submitButton = document.getElementById("authSubmit");
+      const biometricButton = document.getElementById("authBiometricButton");
+
+      if (submitButton) {
+        submitButton.disabled = authState.busy || authState.biometricBusy;
+      }
+
+      if (!biometricButton) return;
+
+      const buttonKey = authState.biometricType === "face_id"
+        ? "auth.actions.face_id"
+        : authState.biometricType === "touch_id"
+          ? "auth.actions.touch_id"
+          : "auth.actions.biometric";
+      biometricButton.textContent = t(buttonKey);
+
+      const shouldShow = authMode === "login" && authState.biometricAvailable && authState.biometricHasSession;
+      biometricButton.style.display = shouldShow ? "" : "none";
+      biometricButton.disabled = authState.busy || authState.biometricBusy || !shouldShow;
+    }
+
+    function requestNativeAuthStatus() {
+      if (!window.CYPNative?.requestAuthStatus) return;
+      window.CYPNative.requestAuthStatus();
+    }
+
+    function saveNativeSecureSession() {
+      if (!window.CYPNative?.saveSecureSession || !authState.token || !authState.user) return;
+      window.CYPNative.saveSecureSession({
+        token: authState.token,
+        user: authState.user,
+        backendOrigin: getBackendOrigin()
+      });
+    }
+
+    function clearNativeSecureSession() {
+      if (!window.CYPNative?.clearSecureSession) return;
+      window.CYPNative.clearSecureSession();
     }
 
     function persistAuthSession() {
@@ -5130,13 +7964,64 @@
       authState.user = user;
       syncPhoneUiStateFromUser();
       persistAuthSession();
+      saveNativeSecureSession();
       setAuthNote("auth.status.ready");
       loadSafetyCircleContacts();
+      updateAuthControls();
+    }
+
+    function needsInitialFaceScan() {
+      return Boolean(authState.requireFaceScan && profileState.resultState !== "ready");
+    }
+
+    async function routeNewUserIntoFaceScan() {
+      authState.requireFaceScan = true;
+      setAuthNote("auth.status.register_scan");
+      activateScreen("app");
+      setTab("profil");
+      updateProfileUI();
+      await startProfileCamera();
+    }
+
+    function completeInitialFaceScanIfReady() {
+      if (profileState.resultState === "ready") {
+        authState.requireFaceScan = false;
+      }
     }
 
     function readAuthInput(name) {
       const element = document.getElementById(`auth-${authMode}-${name}`);
       return typeof element?.value === "string" ? element.value.trim() : "";
+    }
+
+    function validateAuthPayload(payload) {
+      const email = String(payload?.email || "").trim();
+      const password = String(payload?.password || "");
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!emailOk) return "auth.status.invalid_email";
+      if (password.length < 8) return "auth.status.password_short";
+      if (authMode === "register" && String(payload?.name || "").trim().length < 2) {
+        return "auth.status.name_missing";
+      }
+      return "";
+    }
+
+    async function parseJsonSafe(response) {
+      try {
+        return await response.json();
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function mapAuthErrorKey(response, body) {
+      const detail = String(body?.detail || "").toLowerCase();
+      if (response.status === 401) return "auth.status.login_invalid";
+      if (response.status === 409) return "auth.status.register_conflict";
+      if (response.status >= 500) return "auth.status.offline";
+      if (detail.includes("email already registered")) return "auth.status.register_conflict";
+      if (detail.includes("invalid credentials")) return "auth.status.login_invalid";
+      return "auth.status.server";
     }
 
     async function submitAuth() {
@@ -5162,7 +8047,16 @@
             password: readAuthInput("password")
           };
 
+      const validationErrorKey = validateAuthPayload(payload);
+      if (validationErrorKey) {
+        setAuthNote(validationErrorKey);
+        updateAuthControls();
+        return;
+      }
+
       authState.busy = true;
+      setAuthNote("auth.status.loading");
+      updateAuthControls();
       try {
         const response = await fetch(`${backendOrigin}${endpoint}`, {
           method: "POST",
@@ -5172,21 +8066,138 @@
           body: JSON.stringify(payload)
         });
 
+        const data = await parseJsonSafe(response);
         if (!response.ok) {
-          const offline = response.status >= 500;
-          throw new Error(offline ? "offline" : "auth");
+          throw new Error(mapAuthErrorKey(response, data));
         }
 
-        const data = await response.json();
         setAuthSession(data.access_token || "", data.user || null);
-        activateScreen("app");
+        if (authMode === "register") {
+          await routeNewUserIntoFaceScan();
+        } else {
+          authState.requireFaceScan = false;
+          activateScreen("app");
+        }
         scheduleMatchingSync("auth");
       } catch (error) {
-        const offline = error?.message === "offline" || error instanceof TypeError;
-        setAuthNote(offline ? "auth.status.offline" : "auth.status.error");
+        const errorKey =
+          error instanceof TypeError
+            ? "auth.status.offline"
+            : typeof error?.message === "string" && error.message.startsWith("auth.status.")
+              ? error.message
+              : "auth.status.error";
+        setAuthNote(errorKey);
       } finally {
         authState.busy = false;
+        updateAuthControls();
       }
+    }
+
+    async function restoreNativeSecureSession(detail) {
+      if (!detail?.token) {
+        setAuthNote("auth.status.biometric.missing");
+        return;
+      }
+
+      authState.biometricBusy = true;
+      setAuthNote("auth.status.biometric.loading");
+      updateAuthControls();
+
+      try {
+        authState.token = detail.token;
+        authState.user = detail.user || null;
+
+        const backendOrigin = getBackendOrigin();
+        const response = await fetch(`${backendOrigin}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${authState.token}`
+          }
+        });
+        if (!response.ok) throw new Error("auth-restore-failed");
+
+        authState.user = await response.json();
+        syncPhoneUiStateFromUser();
+        persistAuthSession();
+        loadSafetyCircleContacts();
+        activateScreen("app");
+        scheduleMatchingSync("auth");
+        setAuthNote("auth.status.ready");
+      } catch (error) {
+        stopMatchingLiveRefresh();
+        authState.token = "";
+        authState.user = null;
+        authState.requireFaceScan = false;
+        persistAuthSession();
+        clearNativeSecureSession();
+        setAuthNote("auth.status.error");
+      } finally {
+        authState.biometricBusy = false;
+        updateAuthControls();
+      }
+    }
+
+    function logoutUser() {
+      if (isAuthBypassed()) {
+        stopMatchingLiveRefresh();
+        stopChatLiveRefresh();
+        clearSafetyAlarmCountdown();
+        bootstrapBypassSession();
+        setTab("radar");
+        activateScreen("app");
+        updateProfileUI();
+        updateMeetingUI();
+        return;
+      }
+
+      stopMatchingLiveRefresh();
+      stopChatLiveRefresh();
+      clearSafetyAlarmCountdown();
+
+      authState.token = "";
+      authState.user = null;
+      authState.busy = false;
+      authState.requireFaceScan = false;
+      authState.biometricBusy = false;
+      authState.phoneBusy = false;
+      authState.phoneStatus = "not_started";
+      authState.phoneErrorKey = "";
+      authState.phoneCodePreview = "";
+      authState.photoBusy = false;
+      authState.photoStatusKey = "app.profile.photo.status.idle";
+      authState.photoErrorKey = "";
+      authState.safetyCircleBusy = false;
+      authState.safetyCircleStatusKey = "app.profile.safety.circle.status.idle";
+      authState.safetyCircleErrorKey = "";
+      authState.safetyCircleContacts = [];
+      authState.safetyCircleEditingId = "";
+      authState.safetyAlarmBusy = false;
+      authState.safetyAlarmStatusKey = "app.profile.safety.alarm.idle";
+      authState.safetyAlarmId = "";
+      authState.safetyAlarmCountdownUntil = 0;
+      authState.lastSyncedPayload = "";
+      authState.matchingSyncState = "auth";
+      authState.matchingCandidatesState = "idle";
+      authState.syncError = "";
+      authState.candidatesError = "";
+      resetMatchingCandidateState();
+
+      meetingState.serverMeeting = null;
+      meetingState.activeCandidate = null;
+      meetingState.chatOpen = false;
+      meetingState.chatLoading = false;
+      meetingState.chatMessages = [];
+      meetingState.chatError = "";
+      meetingState.lastChatSyncAt = "";
+      syncMeetingCandidate([]);
+
+      syncPhoneUiStateFromUser();
+      persistAuthSession();
+      clearNativeSecureSession();
+      setAuthMode("login");
+      activateScreen("auth");
+      setAuthNote("auth.status.logged_out");
+      updateAuthControls();
+      updateMeetingUI();
     }
 
     async function loadMatchingCandidates() {
@@ -5311,6 +8322,16 @@
         clearTimeout(authState.syncTimer);
       }
 
+      if (isAuthBypassed()) {
+        authState.matchingSyncState = "synced";
+        authState.matchingCandidatesState = "idle";
+        resetMatchingCandidateState();
+        stopMatchingLiveRefresh();
+        syncMeetingCandidate([]);
+        updateProfileUI();
+        return;
+      }
+
       if (!authState.token) {
         authState.matchingSyncState = "auth";
         authState.matchingCandidatesState = matchingState.profile?.matchingEligible ? "blocked" : "idle";
@@ -5327,6 +8348,15 @@
     }
 
     async function restoreAuthSession() {
+      if (isAuthBypassed()) {
+        bootstrapBypassSession();
+        activateScreen("app");
+        setTab("radar");
+        updateProfileUI();
+        updateMeetingUI();
+        return;
+      }
+
       try {
         const raw = localStorage.getItem(AUTH_STORAGE_KEY);
         if (!raw) return;
@@ -5335,7 +8365,8 @@
 
         authState.token = parsed.token;
         authState.user = parsed.user || null;
-        setAuthNote("auth.status.ready");
+        setAuthNote("auth.status.restoring");
+        updateAuthControls();
 
         const backendOrigin = getBackendOrigin();
         const response = await fetch(`${backendOrigin}/auth/me`, {
@@ -5351,11 +8382,14 @@
         loadSafetyCircleContacts();
         activateScreen("app");
         scheduleMatchingSync("auth");
+        setAuthNote("auth.status.ready");
+        updateAuthControls();
       } catch (error) {
         stopMatchingLiveRefresh();
         clearSafetyAlarmCountdown();
         authState.token = "";
         authState.user = null;
+        clearNativeSecureSession();
         authState.safetyCircleContacts = [];
         authState.safetyCircleEditingId = "";
         authState.safetyCircleStatusKey = "app.profile.safety.circle.status.idle";
@@ -5368,6 +8402,7 @@
         syncMeetingCandidate([]);
         setAuthNote("auth.note");
         persistAuthSession();
+        updateAuthControls();
       }
     }
 
@@ -5393,7 +8428,7 @@
       updateMeetingUI();
     }
 
-    function openNativeMeetingMap({ meetingPoint = null, candidateLocation = null, acceptance = null, arrival = null, ok = null, meetingContext = null } = {}) {
+    function openNativeMeetingMap({ meetingPoint = null, candidateLocation = null, acceptance = null, arrival = null, ok = null, meetingContext = null, preferAR = false } = {}) {
       return new Promise((resolve, reject) => {
         if (!window.CYPNative?.openMeetingMap) {
           reject(new Error("native-map-unavailable"));
@@ -5438,6 +8473,9 @@
         if (meetingContext) {
           payload.meetingContext = meetingContext;
         }
+        if (preferAR) {
+          payload.preferAR = true;
+        }
 
         const started = window.CYPNative.openMeetingMap(payload);
 
@@ -5447,6 +8485,58 @@
           reject(new Error("native-map-unavailable"));
         }
       });
+    }
+
+    function buildNativeMeetingPayload({ preferAR = false } = {}) {
+      const currentUserId = authState.user?.id || "";
+      const acceptedBy = new Set(meetingState.serverMeeting?.accepted_by || []);
+      const arrivedBy = new Set(meetingState.serverMeeting?.arrived_by || []);
+      const okBy = new Set(meetingState.serverMeeting?.ok_by || []);
+      const acceptance = meetingState.serverMeeting
+        ? {
+            youAccepted: currentUserId ? acceptedBy.has(currentUserId) : false,
+            otherAccepted: Boolean(meetingState.serverMeeting.fully_accepted)
+              ? true
+              : Array.from(acceptedBy).some((id) => id !== currentUserId),
+            fullyAccepted: Boolean(meetingState.serverMeeting.fully_accepted)
+          }
+        : null;
+      const arrival = meetingState.serverMeeting
+        ? {
+            youArrived: currentUserId ? arrivedBy.has(currentUserId) : false,
+            otherArrived: Boolean(meetingState.serverMeeting.both_arrived)
+              ? true
+              : Array.from(arrivedBy).some((id) => id !== currentUserId),
+            bothArrived: Boolean(meetingState.serverMeeting.both_arrived)
+          }
+        : null;
+      const ok = meetingState.serverMeeting
+        ? {
+            youOk: currentUserId ? okBy.has(currentUserId) : false,
+            otherOk: Boolean(meetingState.serverMeeting.both_ok)
+              ? true
+              : Array.from(okBy).some((id) => id !== currentUserId),
+            bothOk: Boolean(meetingState.serverMeeting.both_ok),
+            chatUnlocked: Boolean(meetingState.serverMeeting.chat_unlocked)
+          }
+        : null;
+      const meetingContext = meetingState.serverMeeting && authState.token
+        ? {
+            meetingId: meetingState.serverMeeting.id,
+            backendOrigin: getBackendOrigin(),
+            authToken: authState.token,
+            currentUserId
+          }
+        : null;
+
+      return {
+        meetingPoint: meetingState.meetingPoint,
+        acceptance,
+        arrival,
+        ok,
+        meetingContext,
+        preferAR
+      };
     }
 
     function applyNativeMeetingMapResult(result) {
@@ -5889,47 +8979,7 @@
 
       if (window.CYPNative?.openMeetingMap) {
         try {
-          const currentUserId = authState.user?.id || "";
-          const acceptedBy = new Set(meetingState.serverMeeting?.accepted_by || []);
-          const arrivedBy = new Set(meetingState.serverMeeting?.arrived_by || []);
-          const okBy = new Set(meetingState.serverMeeting?.ok_by || []);
-          const acceptance = meetingState.serverMeeting
-            ? {
-                youAccepted: currentUserId ? acceptedBy.has(currentUserId) : false,
-                otherAccepted: Boolean(meetingState.serverMeeting.fully_accepted)
-                  ? true
-                  : Array.from(acceptedBy).some((id) => id !== currentUserId),
-                fullyAccepted: Boolean(meetingState.serverMeeting.fully_accepted)
-              }
-            : null;
-          const arrival = meetingState.serverMeeting
-            ? {
-                youArrived: currentUserId ? arrivedBy.has(currentUserId) : false,
-                otherArrived: Boolean(meetingState.serverMeeting.both_arrived)
-                  ? true
-                  : Array.from(arrivedBy).some((id) => id !== currentUserId),
-                bothArrived: Boolean(meetingState.serverMeeting.both_arrived)
-              }
-            : null;
-          const ok = meetingState.serverMeeting
-            ? {
-                youOk: currentUserId ? okBy.has(currentUserId) : false,
-                otherOk: Boolean(meetingState.serverMeeting.both_ok)
-                  ? true
-                  : Array.from(okBy).some((id) => id !== currentUserId),
-                bothOk: Boolean(meetingState.serverMeeting.both_ok),
-                chatUnlocked: Boolean(meetingState.serverMeeting.chat_unlocked)
-              }
-            : null;
-          const meetingContext = meetingState.serverMeeting && authState.token
-            ? {
-                meetingId: meetingState.serverMeeting.id,
-                backendOrigin: getBackendOrigin(),
-                authToken: authState.token,
-                currentUserId
-              }
-            : null;
-          const nativeResult = await openNativeMeetingMap({ meetingPoint: meetingState.meetingPoint, acceptance, arrival, ok, meetingContext });
+          const nativeResult = await openNativeMeetingMap(buildNativeMeetingPayload());
           applyNativeMeetingMapResult(nativeResult);
           meetingState.loading = false;
           maybeMarkArrival();
@@ -6000,30 +9050,68 @@
       }
     }
 
+    async function openMeetingARGuide() {
+      if (!window.CYPNative?.openMeetingMap || !meetingState.meetingPoint || !meetingState.serverMeeting || !authState.token) {
+        return false;
+      }
+
+      meetingState.loading = true;
+      updateMeetingUI();
+
+      try {
+        const nativeResult = await openNativeMeetingMap(buildNativeMeetingPayload({ preferAR: true }));
+        applyNativeMeetingMapResult(nativeResult);
+        maybeMarkArrival();
+        scheduleMatchingSync("location");
+        return true;
+      } catch (error) {
+        if (error?.message !== "native-map-unavailable" && error?.message !== "native-map-timeout") {
+          applyNativeMeetingMapResult({ errorStatus: "map_unavailable", meetingPoint: null, routeMeta: null, location: null });
+        }
+        return false;
+      } finally {
+        meetingState.loading = false;
+        updateMeetingUI();
+      }
+    }
+
     function setAuthMode(mode) {
       authMode = mode;
       document.querySelectorAll("[data-auth-mode]").forEach((button) => {
         button.classList.toggle("active", button.dataset.authMode === mode);
       });
       renderAuthFields(mode);
+      renderEntryCompanion();
+      renderCompanionPresence();
+      if (mode === "login" && authState.biometricAvailable && authState.biometricHasSession && !authState.busy && !authState.biometricBusy) {
+        setAuthNote("auth.note.biometric");
+      } else if (authState.noteKey === "auth.note.biometric") {
+        setAuthNote("auth.note");
+      }
+      updateAuthControls();
     }
 
     function setTab(name) {
-      activeTab = name;
+      activeTab = needsInitialFaceScan() && name !== "profil" ? "profil" : name;
       document.querySelectorAll("[data-tab-content]").forEach((panel) => {
-        panel.classList.toggle("active", panel.dataset.tabContent === name);
+        panel.classList.toggle("active", panel.dataset.tabContent === activeTab);
       });
       document.querySelectorAll(".nav-button").forEach((button) => {
-        button.classList.toggle("active", button.dataset.tabTarget === name);
+        button.classList.toggle("active", button.dataset.tabTarget === activeTab);
       });
 
-      if (name === "treffen") {
+      if (activeTab === "treffen") {
         setTimeout(() => {
           meetingState.map?.invalidateSize?.();
           updateMeetingMap();
         }, 80);
       }
+      if (activeTab === "more") {
+        loadCompanionExperience();
+      }
       updateTabBanner();
+      renderCompanionUI();
+      renderCompanionPresence();
     }
 
     function updateTabBanner() {
@@ -6382,6 +9470,7 @@
       const titleEl = document.getElementById("meetingFlowTitle");
       const bodyEl = document.getElementById("meetingFlowBody");
       const ctaEl = document.getElementById("meetingFlowCta");
+      const arCtaEl = document.getElementById("meetingArCta");
       const sequenceEl = document.getElementById("meetingFlowSequence");
       const routeCardEl = document.getElementById("meetingRouteCard");
       const routeTitleEl = document.getElementById("meetingRouteTitle");
@@ -6391,7 +9480,7 @@
       const routeEtaEl = document.getElementById("meetingRouteEta");
       const permissionChipEl = document.getElementById("meetingPermissionChip");
       const routingChipEl = document.getElementById("meetingRoutingChip");
-      if (!titleEl || !bodyEl || !ctaEl || !sequenceEl || !routeCardEl || !routeTitleEl || !routeSubtitleEl || !routeChipEl || !routeDistanceEl || !routeEtaEl || !permissionChipEl || !routingChipEl) return;
+      if (!titleEl || !bodyEl || !ctaEl || !arCtaEl || !sequenceEl || !routeCardEl || !routeTitleEl || !routeSubtitleEl || !routeChipEl || !routeDistanceEl || !routeEtaEl || !permissionChipEl || !routingChipEl) return;
 
       const candidatePreparedState = meetingFlowState === "idle" && Boolean(meetingState.activeCandidate);
       const locationReadyState = meetingFlowState === "idle" && meetingState.permission === "granted" && !meetingState.activeCandidate && !meetingState.meetingPoint;
@@ -6472,6 +9561,18 @@
       ctaEl.disabled = (meetingState.loading && !hasStaleLocationLoading) || meetingFlowState === "loading" || (waitingAcceptanceState && youAccepted) || (arrivalState && ((youArrived && !bothArrived) || (bothArrived && youOk)));
       ctaEl.style.opacity = ctaEl.disabled ? "0.6" : "1";
 
+      const arReady = Boolean(
+        window.CYPNative?.openMeetingMap
+        && meetingState.meetingPoint
+        && meetingState.serverMeeting?.id
+        && authState.token
+        && (meetingFlowState === "meeting_point_ready" || meetingFlowState === "navigating" || meetingFlowState === "arrived")
+      );
+      arCtaEl.style.display = arReady ? "" : "none";
+      arCtaEl.textContent = meetingState.loading ? t("app.meeting.flow.ar_cta_loading") : t("app.meeting.flow.ar_cta");
+      arCtaEl.disabled = meetingState.loading || !arReady;
+      arCtaEl.style.opacity = arCtaEl.disabled ? "0.6" : "1";
+
       const activeIndex = meetingFlowState === "idle" || meetingFlowState === "loading" || meetingFlowState === "error"
         ? 0
         : meetingFlowState === "meeting_point_ready"
@@ -6525,6 +9626,10 @@
       updateMeetingMap();
       updateProfileUI();
       renderChatScreen();
+      renderCompanionUI();
+      if (activeTab === "more") {
+        loadCompanionExperience({ silent: true });
+      }
     }
 
     async function openMeetingChat() {
@@ -6599,6 +9704,34 @@
     }
 
     applyI18n();
+    window.addEventListener("cyp:native-auth-status", (event) => {
+      const detail = event.detail || {};
+      authState.biometricAvailable = Boolean(detail.available);
+      authState.biometricEnrolled = Boolean(detail.enrolled);
+      authState.biometricHasSession = Boolean(detail.hasSecureSession);
+      authState.biometricType = detail.biometryType || "none";
+      authState.biometricLabel = detail.label || "";
+      if (authMode === "login" && authState.biometricAvailable && authState.biometricHasSession && authState.noteKey === "auth.note") {
+        setAuthNote("auth.note.biometric");
+      }
+      updateAuthControls();
+    });
+    window.addEventListener("cyp:native-auth-restored", async (event) => {
+      await restoreNativeSecureSession(event.detail || {});
+    });
+    window.addEventListener("cyp:native-auth-error", (event) => {
+      authState.biometricBusy = false;
+      const code = event.detail?.code || "biometry_failed";
+      const noteKey = code === "biometry_cancelled"
+        ? "auth.status.biometric.cancelled"
+        : code === "biometry_unavailable"
+          ? "auth.status.biometric.unavailable"
+          : code === "secure_session_missing"
+            ? "auth.status.biometric.missing"
+            : "auth.status.biometric.failed";
+      setAuthNote(noteKey);
+      updateAuthControls();
+    });
     window.addEventListener("cyp:native-camera-scan", (event) => {
       handleNativeCameraScanResult(event.detail);
     });
@@ -6608,7 +9741,15 @@
     renderRadarState();
     updateProfileUI();
     updateMeetingUI();
-    restoreAuthSession();
+    renderCompanionUI();
+    renderCompanionPresence();
+    startCompanionPresenceLoop();
+    if (isAuthBypassed()) {
+      bootstrapBypassSession();
+      activateScreen("app");
+    } else {
+      restoreAuthSession();
+    }
 
     document.querySelectorAll("[data-action='go-screen']").forEach((button) => {
       button.addEventListener("click", () => activateScreen(button.dataset.targetScreen));
@@ -6618,13 +9759,120 @@
       button.addEventListener("click", () => setAuthMode(button.dataset.authMode));
     });
 
+    document.addEventListener("click", (event) => {
+      const actionButton = event.target.closest("[data-entry-command]");
+      if (!actionButton) return;
+      const command = actionButton.dataset.entryCommand;
+      if (command === "go-explain") {
+        activateScreen("explain");
+      } else if (command === "go-auth") {
+        activateScreen("auth");
+      } else if (command === "go-welcome") {
+        activateScreen("welcome");
+      } else if (command === "go-app") {
+        activateScreen("app");
+      } else if (command === "switch-login") {
+        setAuthMode("login");
+      } else if (command === "submit-auth") {
+        document.getElementById("authSubmit")?.click();
+      }
+    });
+
     document.getElementById("authSubmit")?.addEventListener("click", async () => {
       await submitAuth();
+    });
+    document.getElementById("authBiometricButton")?.addEventListener("click", () => {
+      if (!window.CYPNative?.restoreSecureSession || authState.biometricBusy) return;
+      authState.biometricBusy = true;
+      setAuthNote("auth.status.biometric.loading");
+      updateAuthControls();
+      window.CYPNative.restoreSecureSession();
+    });
+    document.getElementById("logoutButton")?.addEventListener("click", () => {
+      logoutUser();
+    });
+
+    document.getElementById("companionInput")?.addEventListener("input", (event) => {
+      companionState.inputDraft = event.target.value;
+      renderCompanionUI();
+    });
+
+    document.getElementById("companionInput")?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      sendCompanionMessage(event.target.value);
+    });
+
+    document.getElementById("companionSendButton")?.addEventListener("click", () => {
+      sendCompanionMessage(document.getElementById("companionInput")?.value || "");
+    });
+
+    document.getElementById("companionSpeakButton")?.addEventListener("click", () => {
+      speakCompanion(companionState.lastReply || companionState.bubbleBodyText || companionState.recommendationText);
+    });
+
+    document.getElementById("companionDockOpen")?.addEventListener("click", () => {
+      setTab("more");
+    });
+
+    document.getElementById("companionRailPrimary")?.addEventListener("click", async () => {
+      await runCompanionRailPrimaryAction();
+    });
+
+    document.getElementById("companionRailSecondary")?.addEventListener("click", async () => {
+      await runCompanionRailSecondaryAction();
+    });
+
+    document.querySelectorAll("[data-companion-prompt-key]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const prompt = t(button.dataset.companionPromptKey);
+        const inputEl = document.getElementById("companionInput");
+        if (inputEl) {
+          inputEl.value = prompt;
+        }
+        companionState.inputDraft = prompt;
+        renderCompanionUI();
+        sendCompanionMessage(prompt);
+      });
+    });
+
+    document.addEventListener("click", (event) => {
+      const lensButton = event.target.closest("[data-companion-lens]");
+      if (!lensButton) return;
+      const lensKey = lensButton.dataset.companionLens;
+      if (!lensKey) return;
+      companionState.activeLens = lensKey;
+      setTab("more");
+      renderCompanionUI();
+      const prompt = promptForLens(lensKey);
+      const inputEl = document.getElementById("companionInput");
+      if (inputEl) {
+        inputEl.value = prompt;
+      }
+      companionState.inputDraft = prompt;
+      renderCompanionUI();
+    });
+
+    [["companionStage", "companionAvatar", "--companion-tilt"], ["companionDock", "companionDockAvatar", "--dock-tilt"]].forEach(([zoneId, targetId, variableName]) => {
+      const zone = document.getElementById(zoneId);
+      const target = document.getElementById(targetId);
+      if (!zone || !target) return;
+      zone.addEventListener("pointermove", (event) => {
+        const rect = zone.getBoundingClientRect();
+        const ratio = ((event.clientX - rect.left) / Math.max(rect.width, 1)) - 0.5;
+        const tilt = `${Math.max(-12, Math.min(12, ratio * 18))}deg`;
+        target.style.setProperty(variableName, tilt);
+      });
+      zone.addEventListener("pointerleave", () => {
+        target.style.setProperty(variableName, "0deg");
+      });
     });
 
     document.querySelectorAll("[data-tab-target]").forEach((button) => {
       button.addEventListener("click", () => setTab(button.dataset.tabTarget));
     });
+
+    requestNativeAuthStatus();
 
     document.getElementById("radarStartButton")?.addEventListener("click", async () => {
       try {
@@ -6832,6 +10080,10 @@
         meetingFlowState = "idle";
         requestMeetingSetup();
       }
+    });
+
+    document.getElementById("meetingArCta")?.addEventListener("click", async () => {
+      await openMeetingARGuide();
     });
 
     window.addEventListener("beforeunload", () => {
