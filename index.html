@@ -388,8 +388,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 148px;
-      height: 148px;
+      width: 138px;
+      height: 138px;
       transform: translate3d(var(--presence-x), var(--presence-y), 0);
       will-change: transform;
       pointer-events: none;
@@ -397,7 +397,7 @@
 
     .companion-presence-core {
       position: absolute;
-      inset: 22px 0 0;
+      inset: 14px 0 0;
       transform-style: preserve-3d;
       filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.28));
     }
@@ -409,17 +409,46 @@
       animation: companionDragonBob 4.8s ease-in-out infinite;
     }
 
-    .companion-presence[data-stage="hatchling"] .companion-dragon { transform: scale(0.82); }
-    .companion-presence[data-stage="scout"] .companion-dragon { transform: scale(0.94); }
-    .companion-presence[data-stage="runner"] .companion-dragon { transform: scale(1.06); }
+    .companion-presence[data-stage="hatchling"] .companion-dragon { transform: scale(0.78); }
+    .companion-presence[data-stage="scout"] .companion-dragon { transform: scale(0.9); }
+    .companion-presence[data-stage="runner"] .companion-dragon { transform: scale(1.04); }
     .companion-presence[data-stage="guardian"] .companion-dragon { transform: scale(1.16); }
+
+    .dragon-shell {
+      position: absolute;
+      left: 34px;
+      top: 74px;
+      width: 66px;
+      height: 42px;
+      border-radius: 24px 24px 30px 30px;
+      background:
+        linear-gradient(180deg, rgba(255, 244, 214, 0.96), rgba(255, 214, 152, 0.88));
+      box-shadow:
+        inset 0 -10px 14px rgba(196, 130, 58, 0.18),
+        0 10px 18px rgba(0, 0, 0, 0.16);
+      opacity: 0.96;
+    }
+
+    .dragon-shell::before,
+    .dragon-shell::after {
+      content: "";
+      position: absolute;
+      top: -9px;
+      width: 28px;
+      height: 16px;
+      background: inherit;
+      clip-path: polygon(0 100%, 18% 36%, 35% 100%, 57% 28%, 72% 100%, 100% 44%, 100% 100%);
+    }
+
+    .dragon-shell::before { left: 0; border-radius: 10px 0 0 0; }
+    .dragon-shell::after { right: 0; border-radius: 0 10px 0 0; }
 
     .dragon-body {
       position: absolute;
       left: 42px;
-      top: 54px;
-      width: 62px;
-      height: 46px;
+      top: 58px;
+      width: 58px;
+      height: 42px;
       border-radius: 42px 38px 28px 28px;
       background:
         radial-gradient(circle at 28% 30%, rgba(255,255,255,0.24), transparent 24%),
@@ -433,8 +462,8 @@
       position: absolute;
       left: 14px;
       top: 14px;
-      width: 32px;
-      height: 24px;
+      width: 28px;
+      height: 20px;
       border-radius: 24px;
       background: linear-gradient(180deg, rgba(255, 233, 176, 0.94), rgba(255, 205, 118, 0.92));
       opacity: 0.92;
@@ -442,10 +471,10 @@
 
     .dragon-head {
       position: absolute;
-      left: 78px;
-      top: 28px;
-      width: 42px;
-      height: 38px;
+      left: 72px;
+      top: 32px;
+      width: 44px;
+      height: 40px;
       border-radius: 24px 24px 18px 18px;
       background: linear-gradient(165deg, #ffd57d 0%, #ffaf66 48%, #a05ab3 100%);
       box-shadow: inset -8px -10px 16px rgba(74, 28, 84, 0.2), inset 8px 8px 12px rgba(255,255,255,0.14);
@@ -453,11 +482,45 @@
       animation: dragonHeadTilt 4.4s ease-in-out infinite;
     }
 
+    .dragon-snout {
+      position: absolute;
+      right: -2px;
+      top: 16px;
+      width: 18px;
+      height: 14px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255, 228, 178, 0.92), rgba(255, 189, 116, 0.94));
+      box-shadow: inset 0 -4px 6px rgba(188, 115, 56, 0.16);
+    }
+
+    .dragon-snout-nostril {
+      position: absolute;
+      top: 6px;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(92, 54, 48, 0.62);
+    }
+
+    .dragon-snout-nostril.left { left: 5px; }
+    .dragon-snout-nostril.right { right: 5px; }
+
+    .dragon-crest {
+      position: absolute;
+      top: -6px;
+      left: 12px;
+      width: 18px;
+      height: 10px;
+      border-radius: 16px 16px 0 0;
+      background: linear-gradient(180deg, rgba(255, 238, 176, 0.96), rgba(255, 171, 89, 0.72));
+      transform: rotate(-6deg);
+    }
+
     .dragon-eye {
       position: absolute;
       top: 14px;
-      width: 8px;
-      height: 10px;
+      width: 7px;
+      height: 9px;
       border-radius: 50%;
       background: #142432;
       box-shadow: 0 0 0 2px rgba(255,255,255,0.16);
@@ -481,9 +544,9 @@
 
     .dragon-wing {
       position: absolute;
-      top: 36px;
-      width: 38px;
-      height: 44px;
+      top: 40px;
+      width: 34px;
+      height: 40px;
       border-radius: 28px 28px 8px 28px;
       background: linear-gradient(180deg, rgba(114, 214, 255, 0.5), rgba(120, 117, 255, 0.12));
       border: 1px solid rgba(255,255,255,0.16);
@@ -493,22 +556,22 @@
     }
 
     .dragon-wing.left {
-      left: 28px;
+      left: 32px;
       transform: rotate(-24deg);
     }
 
     .dragon-wing.right {
-      left: 74px;
+      left: 70px;
       transform: scaleX(-1) rotate(-24deg);
       animation-delay: 0.14s;
     }
 
     .dragon-tail {
       position: absolute;
-      left: 22px;
-      top: 66px;
-      width: 42px;
-      height: 16px;
+      left: 20px;
+      top: 70px;
+      width: 40px;
+      height: 14px;
       border-radius: 16px;
       background: linear-gradient(90deg, #ffcc72, #ff9d66, #814fb2);
       transform-origin: right center;
@@ -529,22 +592,45 @@
 
     .dragon-leg {
       position: absolute;
-      bottom: 8px;
-      width: 12px;
-      height: 26px;
+      bottom: 14px;
+      width: 10px;
+      height: 22px;
       border-radius: 10px;
       background: linear-gradient(180deg, #ffbb69, #c76d64);
       transform-origin: top center;
     }
 
     .dragon-leg.front {
-      left: 78px;
+      left: 74px;
       animation: dragonWalk 1.2s ease-in-out infinite;
     }
 
     .dragon-leg.back {
       left: 54px;
       animation: dragonWalk 1.2s ease-in-out infinite reverse;
+    }
+
+    .dragon-food {
+      position: absolute;
+      left: 88px;
+      top: 22px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff3b9 0%, #ffc463 48%, rgba(255, 196, 99, 0.06) 100%);
+      opacity: 0;
+      transform: translate3d(0, 0, 0) scale(0.6);
+      filter: blur(0.2px);
+    }
+
+    .dragon-food.f2 {
+      left: 102px;
+      top: 34px;
+      animation-delay: 1.2s;
+    }
+
+    .companion-presence.is-fed .dragon-food {
+      animation: dragonFoodFloat 2.3s ease-out infinite;
     }
 
     .companion-presence.is-walking .dragon-leg,
@@ -555,14 +641,14 @@
     .companion-presence-ring,
     .companion-presence-ring.secondary {
       position: absolute;
-      inset: 20px 12px 0;
+      inset: 30px 20px 8px;
       border-radius: 50%;
       border: 1px solid rgba(255, 208, 122, 0.16);
       animation: orbitSpin 14s linear infinite;
     }
 
     .companion-presence-ring.secondary {
-      inset: 8px -4px -8px;
+      inset: 18px 6px -2px;
       border-color: rgba(113, 209, 255, 0.18);
       animation-duration: 16s;
       animation-direction: reverse;
@@ -570,7 +656,7 @@
 
     .companion-presence-glow {
       position: absolute;
-      inset: 10px -18px -18px;
+      inset: 24px -12px -8px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(255, 194, 109, 0.16), rgba(113, 209, 255, 0.06) 44%, rgba(255,255,255,0) 70%);
       filter: blur(18px);
@@ -580,9 +666,9 @@
     .companion-presence-shadow {
       position: absolute;
       left: 50%;
-      bottom: -8px;
-      width: 104px;
-      height: 24px;
+      bottom: 4px;
+      width: 84px;
+      height: 18px;
       transform: translateX(-50%);
       border-radius: 50%;
       background: radial-gradient(circle, rgba(255, 184, 84, 0.2), rgba(0,0,0,0));
@@ -592,47 +678,75 @@
 
     .companion-presence-hud {
       position: absolute;
-      left: 12px;
-      right: 12px;
-      top: -8px;
-      display: grid;
+      left: 50%;
+      bottom: -14px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
       gap: 6px;
-      padding: 8px 10px;
-      border-radius: 16px;
-      background: linear-gradient(180deg, rgba(13, 18, 27, 0.88), rgba(12, 17, 26, 0.74));
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.18);
-      backdrop-filter: blur(16px);
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(10, 15, 22, 0.64);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.16);
+      backdrop-filter: blur(14px);
       pointer-events: none;
+      max-width: 120px;
+      overflow: hidden;
     }
 
     .companion-presence-kicker {
-      color: var(--gold);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      color: rgba(255, 224, 154, 0.96);
+      font-size: 9px;
+      letter-spacing: 0.04em;
       font-weight: 800;
-      margin-bottom: 4px;
+      white-space: nowrap;
     }
 
     .companion-presence-title {
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 13px;
-      line-height: 1.05;
-      font-weight: 700;
+      display: none;
     }
 
     .companion-presence-pills {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+      gap: 4px;
+      min-width: 0;
     }
 
     .companion-presence-pills .mini-pill {
-      font-size: 9px;
-      padding: 4px 7px;
-      background: rgba(255,255,255,0.04);
+      font-size: 8px;
+      padding: 3px 6px;
+      background: rgba(255,255,255,0.05);
+      white-space: nowrap;
+      max-width: 44px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 720px) {
+      .companion-presence {
+        width: 116px;
+        height: 116px;
+      }
+
+      .companion-presence-hud {
+        bottom: -8px;
+        max-width: 82px;
+        padding: 4px 6px;
+      }
+
+      .companion-presence-kicker {
+        display: none;
+      }
+
+      .companion-presence-pills .mini-pill:nth-child(2) {
+        display: none;
+      }
+
+      .companion-presence-ring,
+      .companion-presence-ring.secondary {
+        opacity: 0.7;
+      }
     }
 
     .step-list {
@@ -2764,6 +2878,13 @@
       50% { transform: rotate(-8deg); }
     }
 
+    @keyframes dragonFoodFloat {
+      0% { transform: translate3d(0, 14px, 0) scale(0.4); opacity: 0; }
+      22% { opacity: 0.96; }
+      60% { transform: translate3d(-12px, -10px, 0) scale(1); opacity: 0.82; }
+      100% { transform: translate3d(-22px, -34px, 0) scale(0.72); opacity: 0; }
+    }
+
     @keyframes companionPresencePulse {
       0%, 100% { transform: scale(0.96); opacity: 0.72; }
       50% { transform: scale(1.04); opacity: 1; }
@@ -3610,6 +3731,7 @@
           <div class="companion-presence-ring"></div>
           <div class="companion-presence-ring secondary"></div>
           <div class="companion-dragon">
+            <div class="dragon-shell"></div>
             <div class="dragon-wing left"></div>
             <div class="dragon-wing right"></div>
             <div class="dragon-tail"></div>
@@ -3617,13 +3739,20 @@
               <div class="dragon-belly"></div>
             </div>
             <div class="dragon-head">
+              <div class="dragon-crest"></div>
               <div class="dragon-horn left"></div>
               <div class="dragon-horn right"></div>
               <div class="dragon-eye left"></div>
               <div class="dragon-eye right"></div>
+              <div class="dragon-snout">
+                <div class="dragon-snout-nostril left"></div>
+                <div class="dragon-snout-nostril right"></div>
+              </div>
             </div>
             <div class="dragon-leg back"></div>
             <div class="dragon-leg front"></div>
+            <div class="dragon-food f1"></div>
+            <div class="dragon-food f2"></div>
           </div>
           <div class="companion-presence-shadow"></div>
         </div>
@@ -7922,49 +8051,61 @@
       if (activeScreenName === "welcome") {
         return {
           x: width * 0.72,
-          y: height * 0.18,
+          y: height * 0.16,
           label: "Baby Dragon",
           status: "schluepft",
           stage: "hatchling",
-          walking: false
+          walking: false,
+          fed: false,
+          pill1: "Ei",
+          pill2: "Mini"
         };
       }
       if (activeScreenName === "explain") {
         return {
-          x: width * 0.16,
-          y: height * 0.28,
+          x: width * 0.18,
+          y: height * 0.24,
           label: "Guide Drake",
           status: "lernt deinen Flow",
           stage: "hatchling",
-          walking: false
+          walking: false,
+          fed: false,
+          pill1: "Guide",
+          pill2: "Warm"
         };
       }
       if (activeScreenName === "auth") {
         const loginMode = authMode === "login";
         return {
           x: width * 0.8,
-          y: height * 0.24,
+          y: height * 0.18,
           label: loginMode ? "Login Drake" : "Nest Builder",
           status: loginMode ? "wartet auf dich" : "waechst durchs Onboarding",
           stage: "hatchling",
-          walking: false
+          walking: false,
+          fed: false,
+          pill1: loginMode ? "Login" : "Nest",
+          pill2: "Soft"
         };
       }
       if (activeScreenName === "chat") {
         return {
-          x: width * 0.76,
-          y: height * 0.14,
+          x: width * 0.78,
+          y: height * 0.12,
           label: "Chat Drake",
           status: "lauscht",
           stage: "runner",
-          walking: false
+          walking: false,
+          fed: true,
+          pill1: "Chat",
+          pill2: "Calm"
         };
       }
       const roomMap = {
-        radar: { x: width * 0.78, y: height * 0.66, side: "left" },
-        treffen: { x: width * 0.78, y: height * 0.34, side: "left" },
-        profil: { x: width * 0.18, y: height * 0.44, side: "right" },
-        more: { x: width * 0.8, y: height * 0.28, side: "left" }
+        radar: { x: width * 0.84, y: height * 0.74, side: "left" },
+        treffen: { x: width * 0.82, y: height * 0.26, side: "left" },
+        profil: { x: width * 0.18, y: height * 0.38, side: "right" },
+        more: { x: width * 0.82, y: height * 0.24, side: "left" }
       };
       const roomConfig = roomMap[activeRoom] || roomMap.radar;
       const growthStage = companionState.xp >= 700
@@ -7979,6 +8120,12 @@
         || meetingState.nativeRouteActive
         || activeRoom === "treffen"
         || radarActive
+      );
+      const fed = Boolean(
+        meetingState.matchAccepted
+        || meetingState.routingStatus === "active"
+        || meetingState.nativeRouteActive
+        || companionState.xp >= 260
       );
       return {
         x: roomConfig.x,
@@ -7995,12 +8142,21 @@
           : t(`app.more.companion.rooms.${activeRoom}`),
         stage: growthStage,
         walking,
-        pill1: `XP ${companionState.xp || 0}`,
+        fed,
+        pill1: growthStage === "guardian"
+          ? "XL"
+          : growthStage === "runner"
+            ? "Run"
+            : growthStage === "scout"
+              ? "Grow"
+              : "Mini",
         pill2: activeRoom === "treffen"
-          ? "Date fuel"
+          ? "Date"
           : walking
-            ? "walking"
-            : "hungry"
+            ? "Walk"
+            : fed
+              ? "Fed"
+              : "Hungry"
       };
     }
 
@@ -8017,6 +8173,7 @@
       companionPresenceState.targetY = next.y;
       presenceEl.dataset.stage = next.stage;
       presenceEl.classList.toggle("is-walking", Boolean(next.walking));
+      presenceEl.classList.toggle("is-fed", Boolean(next.fed));
       kickerEl.textContent = next.label;
       titleEl.textContent = next.status;
       pill1El.textContent = next.pill1;
