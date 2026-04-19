@@ -388,8 +388,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 126px;
-      height: 126px;
+      width: 148px;
+      height: 148px;
       transform: translate3d(var(--presence-x), var(--presence-y), 0);
       will-change: transform;
       pointer-events: none;
@@ -397,53 +397,182 @@
 
     .companion-presence-core {
       position: absolute;
-      inset: 0;
+      inset: 22px 0 0;
       transform-style: preserve-3d;
-      filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.32));
+      filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.28));
     }
 
-    .companion-presence-orb {
+    .companion-dragon {
       position: absolute;
-      inset: 16px;
-      border-radius: 50%;
+      inset: 0;
+      transform-origin: center bottom;
+      animation: companionDragonBob 4.8s ease-in-out infinite;
+    }
+
+    .companion-presence[data-stage="hatchling"] .companion-dragon { transform: scale(0.82); }
+    .companion-presence[data-stage="scout"] .companion-dragon { transform: scale(0.94); }
+    .companion-presence[data-stage="runner"] .companion-dragon { transform: scale(1.06); }
+    .companion-presence[data-stage="guardian"] .companion-dragon { transform: scale(1.16); }
+
+    .dragon-body {
+      position: absolute;
+      left: 42px;
+      top: 54px;
+      width: 62px;
+      height: 46px;
+      border-radius: 42px 38px 28px 28px;
       background:
-        radial-gradient(circle at 34% 26%, rgba(255,255,255,0.98), rgba(255,255,255,0.18) 16%, transparent 30%),
-        radial-gradient(circle at 50% 54%, rgba(255, 193, 105, 0.98), rgba(255, 133, 83, 0.78) 34%, rgba(48, 104, 124, 0.82) 82%);
+        radial-gradient(circle at 28% 30%, rgba(255,255,255,0.24), transparent 24%),
+        linear-gradient(160deg, #ffcf73 0%, #ff9c63 46%, #9851a4 100%);
       box-shadow:
-        inset -24px -24px 38px rgba(0,0,0,0.2),
-        inset 14px 18px 24px rgba(255,255,255,0.16),
-        0 18px 38px rgba(0,0,0,0.18);
-      animation: companionPresenceFloat 5.2s ease-in-out infinite;
+        inset -10px -14px 20px rgba(60, 23, 68, 0.22),
+        inset 10px 10px 14px rgba(255,255,255,0.16);
+    }
+
+    .dragon-belly {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 32px;
+      height: 24px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255, 233, 176, 0.94), rgba(255, 205, 118, 0.92));
+      opacity: 0.92;
+    }
+
+    .dragon-head {
+      position: absolute;
+      left: 78px;
+      top: 28px;
+      width: 42px;
+      height: 38px;
+      border-radius: 24px 24px 18px 18px;
+      background: linear-gradient(165deg, #ffd57d 0%, #ffaf66 48%, #a05ab3 100%);
+      box-shadow: inset -8px -10px 16px rgba(74, 28, 84, 0.2), inset 8px 8px 12px rgba(255,255,255,0.14);
+      transform-origin: 20% 80%;
+      animation: dragonHeadTilt 4.4s ease-in-out infinite;
+    }
+
+    .dragon-eye {
+      position: absolute;
+      top: 14px;
+      width: 8px;
+      height: 10px;
+      border-radius: 50%;
+      background: #142432;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.16);
+      animation: dragonBlink 5.8s infinite;
+    }
+
+    .dragon-eye.left { left: 9px; }
+    .dragon-eye.right { right: 9px; }
+
+    .dragon-horn {
+      position: absolute;
+      top: -8px;
+      width: 10px;
+      height: 18px;
+      clip-path: polygon(50% 0, 0 100%, 100% 100%);
+      background: linear-gradient(180deg, #fff0be, #ffcb76);
+    }
+
+    .dragon-horn.left { left: 7px; transform: rotate(-16deg); }
+    .dragon-horn.right { right: 7px; transform: rotate(16deg); }
+
+    .dragon-wing {
+      position: absolute;
+      top: 36px;
+      width: 38px;
+      height: 44px;
+      border-radius: 28px 28px 8px 28px;
+      background: linear-gradient(180deg, rgba(114, 214, 255, 0.5), rgba(120, 117, 255, 0.12));
+      border: 1px solid rgba(255,255,255,0.16);
+      backdrop-filter: blur(4px);
+      transform-origin: bottom center;
+      animation: dragonWingFlap 1.6s ease-in-out infinite;
+    }
+
+    .dragon-wing.left {
+      left: 28px;
+      transform: rotate(-24deg);
+    }
+
+    .dragon-wing.right {
+      left: 74px;
+      transform: scaleX(-1) rotate(-24deg);
+      animation-delay: 0.14s;
+    }
+
+    .dragon-tail {
+      position: absolute;
+      left: 22px;
+      top: 66px;
+      width: 42px;
+      height: 16px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #ffcc72, #ff9d66, #814fb2);
+      transform-origin: right center;
+      animation: dragonTailSway 2.8s ease-in-out infinite;
+    }
+
+    .dragon-tail::after {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: -6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 2px 12px 12px 12px;
+      background: linear-gradient(180deg, #fff2c4, #ffcb72);
+      transform: rotate(-28deg);
+    }
+
+    .dragon-leg {
+      position: absolute;
+      bottom: 8px;
+      width: 12px;
+      height: 26px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #ffbb69, #c76d64);
+      transform-origin: top center;
+    }
+
+    .dragon-leg.front {
+      left: 78px;
+      animation: dragonWalk 1.2s ease-in-out infinite;
+    }
+
+    .dragon-leg.back {
+      left: 54px;
+      animation: dragonWalk 1.2s ease-in-out infinite reverse;
+    }
+
+    .companion-presence.is-walking .dragon-leg,
+    .companion-presence.is-walking .dragon-tail {
+      animation-duration: 0.72s;
     }
 
     .companion-presence-ring,
-    .companion-presence-ring.secondary,
-    .companion-presence-ring.tertiary {
+    .companion-presence-ring.secondary {
       position: absolute;
-      inset: 2px;
+      inset: 20px 12px 0;
       border-radius: 50%;
-      border: 1px solid rgba(255, 208, 122, 0.22);
-      animation: orbitSpin 13s linear infinite;
+      border: 1px solid rgba(255, 208, 122, 0.16);
+      animation: orbitSpin 14s linear infinite;
     }
 
     .companion-presence-ring.secondary {
-      inset: -12px;
+      inset: 8px -4px -8px;
       border-color: rgba(113, 209, 255, 0.18);
       animation-duration: 16s;
       animation-direction: reverse;
     }
 
-    .companion-presence-ring.tertiary {
-      inset: -24px;
-      border-color: rgba(255,255,255,0.1);
-      animation-duration: 20s;
-    }
-
     .companion-presence-glow {
       position: absolute;
-      inset: -34px;
+      inset: 10px -18px -18px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 194, 109, 0.18), rgba(113, 209, 255, 0.06) 44%, rgba(255,255,255,0) 70%);
+      background: radial-gradient(circle, rgba(255, 194, 109, 0.16), rgba(113, 209, 255, 0.06) 44%, rgba(255,255,255,0) 70%);
       filter: blur(18px);
       animation: companionPresencePulse 4.6s ease-in-out infinite;
     }
@@ -452,57 +581,29 @@
       position: absolute;
       left: 50%;
       bottom: -8px;
-      width: 120px;
-      height: 28px;
+      width: 104px;
+      height: 24px;
       transform: translateX(-50%);
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 184, 84, 0.22), rgba(0,0,0,0));
+      background: radial-gradient(circle, rgba(255, 184, 84, 0.2), rgba(0,0,0,0));
       filter: blur(10px);
       animation: floorPulse 4.2s ease-in-out infinite;
     }
 
-    .companion-presence-bubble {
+    .companion-presence-hud {
       position: absolute;
-      min-width: 180px;
-      max-width: 240px;
-      padding: 12px 14px;
-      border-radius: 20px;
-      background: linear-gradient(180deg, rgba(16, 23, 34, 0.96), rgba(13, 19, 28, 0.96));
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 18px 36px rgba(0,0,0,0.26);
+      left: 12px;
+      right: 12px;
+      top: -8px;
+      display: grid;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(13, 18, 27, 0.88), rgba(12, 17, 26, 0.74));
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.18);
       backdrop-filter: blur(16px);
-      pointer-events: auto;
-    }
-
-    .companion-presence-bubble::after {
-      content: "";
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      background: inherit;
-      border-left: 1px solid rgba(255,255,255,0.08);
-      border-top: 1px solid rgba(255,255,255,0.08);
-      transform: rotate(45deg);
-    }
-
-    .companion-presence[data-bubble-side="left"] .companion-presence-bubble {
-      right: calc(100% + 14px);
-      top: 6px;
-    }
-
-    .companion-presence[data-bubble-side="left"] .companion-presence-bubble::after {
-      right: -8px;
-      top: 22px;
-    }
-
-    .companion-presence[data-bubble-side="right"] .companion-presence-bubble {
-      left: calc(100% + 14px);
-      top: 6px;
-    }
-
-    .companion-presence[data-bubble-side="right"] .companion-presence-bubble::after {
-      left: -8px;
-      top: 22px;
+      pointer-events: none;
     }
 
     .companion-presence-kicker {
@@ -517,17 +618,9 @@
     .companion-presence-title {
       color: var(--text);
       font-family: "Space Grotesk", sans-serif;
-      font-size: 16px;
-      line-height: 1.08;
+      font-size: 13px;
+      line-height: 1.05;
       font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .companion-presence-body {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
-      margin-bottom: 10px;
     }
 
     .companion-presence-pills {
@@ -537,8 +630,8 @@
     }
 
     .companion-presence-pills .mini-pill {
-      font-size: 10px;
-      padding: 6px 9px;
+      font-size: 9px;
+      padding: 4px 7px;
       background: rgba(255,255,255,0.04);
     }
 
@@ -2639,11 +2732,36 @@
       50% { transform: translateY(-10px); }
     }
 
-    @keyframes companionPresenceFloat {
-      0%, 100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-      25% { transform: translateY(-8px) rotateX(6deg) rotateY(-8deg); }
-      50% { transform: translateY(-12px) rotateX(0deg) rotateY(8deg); }
-      75% { transform: translateY(-6px) rotateX(-4deg) rotateY(-6deg); }
+    @keyframes companionDragonBob {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-5px) rotate(-2deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+      75% { transform: translateY(-4px) rotate(2deg); }
+    }
+
+    @keyframes dragonWingFlap {
+      0%, 100% { transform: rotate(-24deg) scaleY(1); }
+      50% { transform: rotate(-6deg) scaleY(0.92); }
+    }
+
+    @keyframes dragonTailSway {
+      0%, 100% { transform: rotate(12deg); }
+      50% { transform: rotate(-16deg); }
+    }
+
+    @keyframes dragonWalk {
+      0%, 100% { transform: rotate(14deg); }
+      50% { transform: rotate(-18deg); }
+    }
+
+    @keyframes dragonBlink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      94%, 96% { transform: scaleY(0.18); }
+    }
+
+    @keyframes dragonHeadTilt {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(-8deg); }
     }
 
     @keyframes companionPresencePulse {
@@ -3478,23 +3596,36 @@
     </section>
 
     <div class="companion-presence-layer app-only" id="companionPresenceLayer" aria-hidden="true">
-      <div class="companion-presence" id="companionPresence" data-bubble-side="left">
-        <div class="companion-presence-core">
-          <div class="companion-presence-glow"></div>
-          <div class="companion-presence-ring"></div>
-          <div class="companion-presence-ring secondary"></div>
-          <div class="companion-presence-ring tertiary"></div>
-          <div class="companion-presence-orb"></div>
-          <div class="companion-presence-shadow"></div>
-        </div>
-        <div class="companion-presence-bubble">
+      <div class="companion-presence" id="companionPresence">
+        <div class="companion-presence-hud">
           <div class="companion-presence-kicker" id="companionPresenceKicker"></div>
           <div class="companion-presence-title" id="companionPresenceTitle"></div>
-          <div class="companion-presence-body" id="companionPresenceBody"></div>
           <div class="companion-presence-pills">
             <span class="mini-pill" id="companionPresencePill1"></span>
             <span class="mini-pill" id="companionPresencePill2"></span>
           </div>
+        </div>
+        <div class="companion-presence-core">
+          <div class="companion-presence-glow"></div>
+          <div class="companion-presence-ring"></div>
+          <div class="companion-presence-ring secondary"></div>
+          <div class="companion-dragon">
+            <div class="dragon-wing left"></div>
+            <div class="dragon-wing right"></div>
+            <div class="dragon-tail"></div>
+            <div class="dragon-body">
+              <div class="dragon-belly"></div>
+            </div>
+            <div class="dragon-head">
+              <div class="dragon-horn left"></div>
+              <div class="dragon-horn right"></div>
+              <div class="dragon-eye left"></div>
+              <div class="dragon-eye right"></div>
+            </div>
+            <div class="dragon-leg back"></div>
+            <div class="dragon-leg front"></div>
+          </div>
+          <div class="companion-presence-shadow"></div>
         </div>
       </div>
     </div>
@@ -7792,24 +7923,20 @@
         return {
           x: width * 0.72,
           y: height * 0.18,
-          side: "left",
-          kicker: t("entry.companion.kicker"),
-          title: t("entry.companion.welcome.title"),
-          body: t("entry.companion.welcome.body"),
-          pill1: t("entry.companion.welcome.pill1"),
-          pill2: t("entry.companion.welcome.pill2")
+          label: "Baby Dragon",
+          status: "schluepft",
+          stage: "hatchling",
+          walking: false
         };
       }
       if (activeScreenName === "explain") {
         return {
           x: width * 0.16,
           y: height * 0.28,
-          side: "right",
-          kicker: t("entry.companion.kicker"),
-          title: t("entry.companion.explain.title"),
-          body: t("entry.companion.explain.body"),
-          pill1: t("entry.companion.explain.pill1"),
-          pill2: t("entry.companion.explain.pill2")
+          label: "Guide Drake",
+          status: "lernt deinen Flow",
+          stage: "hatchling",
+          walking: false
         };
       }
       if (activeScreenName === "auth") {
@@ -7817,24 +7944,20 @@
         return {
           x: width * 0.8,
           y: height * 0.24,
-          side: "left",
-          kicker: t("entry.companion.kicker"),
-          title: t(loginMode ? "entry.companion.auth.login.title" : "entry.companion.auth.register.title"),
-          body: t(loginMode ? "entry.companion.auth.login.body" : "entry.companion.auth.register.body"),
-          pill1: t(loginMode ? "entry.companion.auth.login.pill1" : "entry.companion.auth.register.pill1"),
-          pill2: t(loginMode ? "entry.companion.auth.login.pill2" : "entry.companion.auth.register.pill2")
+          label: loginMode ? "Login Drake" : "Nest Builder",
+          status: loginMode ? "wartet auf dich" : "waechst durchs Onboarding",
+          stage: "hatchling",
+          walking: false
         };
       }
       if (activeScreenName === "chat") {
         return {
           x: width * 0.76,
           y: height * 0.14,
-          side: "left",
-          kicker: "Chat Guide",
-          title: "Ich bleibe ueber euch in Bewegung",
-          body: "Auch hier schwebe ich nicht als Block, sondern lese den Moment ueber euch und halte den Ton bewusst.",
-          pill1: "Live Chat",
-          pill2: "Tone Read"
+          label: "Chat Drake",
+          status: "lauscht",
+          stage: "runner",
+          walking: false
         };
       }
       const roomMap = {
@@ -7844,19 +7967,40 @@
         more: { x: width * 0.8, y: height * 0.28, side: "left" }
       };
       const roomConfig = roomMap[activeRoom] || roomMap.radar;
+      const growthStage = companionState.xp >= 700
+        ? "guardian"
+        : companionState.xp >= 500
+          ? "runner"
+          : companionState.xp >= 260
+            ? "scout"
+            : "hatchling";
+      const walking = Boolean(
+        meetingState.routingStatus === "active"
+        || meetingState.nativeRouteActive
+        || activeRoom === "treffen"
+        || radarActive
+      );
       return {
         x: roomConfig.x,
         y: roomConfig.y,
-        side: roomConfig.side,
-        kicker: t(companionState.loading ? "app.more.companion.bubble.loading.title" : "app.more.companion.guide.kicker"),
-        title: activeRoom === "more"
+        label: growthStage === "guardian"
+          ? "Guardian Drake"
+          : growthStage === "runner"
+            ? "Runner Drake"
+            : growthStage === "scout"
+              ? "Scout Drake"
+              : "Baby Drake",
+        status: activeRoom === "more"
           ? t(`app.more.companion.lens.${companionState.activeLens || "chemistry"}`)
           : t(`app.more.companion.rooms.${activeRoom}`),
-        body: companionState.loading
-          ? t("app.more.companion.bubble.loading.body")
-          : (companionState.lastReply || companionState.recommendationText || companionState.bubbleBodyText || t("app.more.companion.bubble.idle.body")),
-        pill1: t(`app.more.companion.mode.${companionState.mode || "coach"}`),
-        pill2: companionState.actionLabel || t("app.more.companion.context.starting")
+        stage: growthStage,
+        walking,
+        pill1: `XP ${companionState.xp || 0}`,
+        pill2: activeRoom === "treffen"
+          ? "Date fuel"
+          : walking
+            ? "walking"
+            : "hungry"
       };
     }
 
@@ -7864,18 +8008,17 @@
       const presenceEl = document.getElementById("companionPresence");
       const kickerEl = document.getElementById("companionPresenceKicker");
       const titleEl = document.getElementById("companionPresenceTitle");
-      const bodyEl = document.getElementById("companionPresenceBody");
       const pill1El = document.getElementById("companionPresencePill1");
       const pill2El = document.getElementById("companionPresencePill2");
-      if (!presenceEl || !kickerEl || !titleEl || !bodyEl || !pill1El || !pill2El) return;
+      if (!presenceEl || !kickerEl || !titleEl || !pill1El || !pill2El) return;
 
       const next = resolveCompanionPresence();
       companionPresenceState.targetX = next.x;
       companionPresenceState.targetY = next.y;
-      presenceEl.dataset.bubbleSide = next.side;
-      kickerEl.textContent = next.kicker;
-      titleEl.textContent = next.title;
-      bodyEl.textContent = next.body;
+      presenceEl.dataset.stage = next.stage;
+      presenceEl.classList.toggle("is-walking", Boolean(next.walking));
+      kickerEl.textContent = next.label;
+      titleEl.textContent = next.status;
       pill1El.textContent = next.pill1;
       pill2El.textContent = next.pill2;
     }
